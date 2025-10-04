@@ -5,6 +5,9 @@ import Editor from './components/Editor';
 import Preview from './components/Preview';
 import Console from './components/Console';
 import Sidebar from './components/Sidebar';
+import AIChat from './components/AIChat';
+import Notifications from './components/Notifications';
+import CollaborationPanel from './components/CollaborationPanel';
 
 function App() {
   const { connect, isConnected } = usePlaygroundStore();
@@ -24,8 +27,11 @@ function App() {
         </div>
       </div>
       <Console />
+      <AIChat />
+      <CollaborationPanel />
+      <Notifications />
       {!isConnected && (
-        <div className="fixed top-16 right-4 bg-yellow-500 text-black px-4 py-2 rounded shadow-lg">
+        <div className="fixed top-16 right-4 bg-yellow-500 text-black px-4 py-2 rounded shadow-lg z-50">
           Connecting to server...
         </div>
       )}

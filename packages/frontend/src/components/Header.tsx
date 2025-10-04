@@ -1,36 +1,129 @@
-import { Play, Share2, Download, Settings } from 'lucide-react';
+import { useState } from 'react';
+import { Play, Share2, Download, Settings, Sun, Moon, Monitor } from 'lucide-react';
 import { usePlaygroundStore } from '../store/playgroundStore';
+import { useThemeStore } from '../store/themeStore';
+import ShareModal from './ShareModal';
+import DownloadModal from './DownloadModal';
+import SettingsModal from './SettingsModal';
 
 export default function Header() {
-  const { isConnected } = usePlaygroundStore();
+  const { isConnected, files, openTabs } = usePlaygroundStore();
+  const { mode, setMode } = useThemeStore();
+  const [showShare, setShowShare] = useState(false);
+  const [showDownload, setShowDownload] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showThemeMenu, setShowThemeMenu] = useState(false);
+
+  const getThemeIcon = () => {
+    switch (mode) {
+      case 'light': return <Sun className="w-5 h-5" />;
+      case 'dark': return <Moon className="w-5 h-5" />;
+      case 'auto': return <Monitor className="w-5 h-5" />;
+    }
+  };
 
   return (
-    <header className="h-14 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-4">
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <Play className="w-5 h-5 text-white" fill="white" />
+    <>
+      <header className="h-14 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-4">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <Play className="w-5 h-5 text-white" fill="white" />
+            </div>
+            <h1 className="text-xl font-bold text-white">RN Playground</h1>
           </div>
-          <h1 className="text-xl font-bold text-white">RN Playground</h1>
+          <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
         </div>
-        <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
-      </div>
 
-      <div className="flex items-center gap-2">
-        <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors">
-          <Play className="w-4 h-4" />
-          Run
-        </button>
-        <button className="p-2 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors">
-          <Share2 className="w-5 h-5" />
-        </button>
-        <button className="p-2 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors">
-          <Download className="w-5 h-5" />
-        </button>
-        <button className="p-2 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors">
-          <Settings className="w-5 h-5" />
-        </button>
-      </div>
-    </header>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowShare(true)}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors"
+            title="Share Project"
+          >
+            <Share2 className="w-4 h-4" />
+            Share
+          </button>
+
+          <button
+            onClick={() => setShowDownload(true)}
+            className="p-2 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors"
+            title="Download Project"
+          >
+            <Download className="w-5 h-5" />
+          </button>
+
+          <div className="relative">
+            <button
+              onClick={() => setShowThemeMenu(!showThemeMenu)}
+              className="p-2 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors"
+              title="Change Theme"
+            >
+              {getThemeIcon()}
+            </button>
+
+            {showThemeMenu && (
+              <div className="absolute right-0 top-full mt-2 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50 min-w-[150px]">
+                <button
+                  onClick={() => {
+                    setMode('light');
+                    setShowThemeMenu(false);
+                  }}
+                  className="w-full px-4 py-2 text-left hover:bg-gray-700 flex items-center gap-2 text-gray-300"
+                >
+                  <Sun className="w-4 h-4" />
+                  Light
+                </button>
+                <button
+                  onClick={() => {
+                    setMode('dark');
+                    setShowThemeMenu(false);
+                  }}
+                  className="w-full px-4 py-2 text-left hover:bg-gray-700 flex items-center gap-2 text-gray-300"
+                >
+                  <Moon className="w-4 h-4" />
+                  Dark
+                </button>
+                <button
+                  onClick={() => {
+                    setMode('auto');
+                    setShowThemeMenu(false);
+                  }}
+                  className="w-full px-4 py-2 text-left hover:bg-gray-700 flex items-center gap-2 text-gray-300"
+                >
+                  <Monitor className="w-4 h-4" />
+                  Auto
+                </button>
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={() => setShowSettings(true)}
+            className="p-2 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors"
+            title="Settings"
+          >
+            <Settings className="w-5 h-5" />
+          </button>
+        </div>
+      </header>
+
+      <ShareModal
+        isOpen={showShare}
+        onClose={() => setShowShare(false)}
+        projectData={{ files, openTabs }}
+      />
+
+      <DownloadModal
+        isOpen={showDownload}
+        onClose={() => setShowDownload(false)}
+        projectData={{ files, openTabs }}
+      />
+
+      <SettingsModal
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
+      />
+    </>
   );
 }

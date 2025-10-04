@@ -5,7 +5,7 @@ export class BundlerService {
     try {
       // Transform React Native code to web-compatible code
       const webCode = this.transformToWeb(code);
-      
+
       // Transpile with Babel (don't transform imports/exports)
       const result = transform(webCode, {
         presets: [
@@ -41,7 +41,7 @@ export class BundlerService {
       /import\s+React\s+from\s+['"]react['"]\s*;?/gi,
       "import React from 'https://esm.sh/react@18.3.1';"
     );
-    
+
     // Add React Native Web polyfills
     const polyfills = `
       import ReactDOM from 'https://esm.sh/react-dom@18.3.1';
@@ -97,21 +97,48 @@ export class BundlerService {
         return React.createElement('span', { style: webStyle, ...props }, children);
       };
 
-      const TouchableOpacity = ({ style, onPress, children, ...props }) => {
+      const TouchableOpacity = ({ style, onPress, children, activeOpacity, ...props }) => {
+        const [isPressed, setIsPressed] = React.useState(false);
+        
         const webStyle = {
           cursor: 'pointer',
           userSelect: 'none',
+          transition: 'opacity 0.2s',
+          opacity: isPressed ? (activeOpacity || 0.7) : 1,
           ...convertStyle(style)
         };
+        
+        const handleMouseDown = () => setIsPressed(true);
+        const handleMouseUp = () => setIsPressed(false);
+        const handleMouseLeave = () => setIsPressed(false);
+        
         return React.createElement('div', { 
           style: webStyle, 
           onClick: onPress,
+          onMouseDown: handleMouseDown,
+          onMouseUp: handleMouseUp,
+          onMouseLeave: handleMouseLeave,
           ...props 
         }, children);
       };
 
       const StyleSheet = {
-        create: (styles) => styles
+        create: (styles) => styles,
+        flatten: (style) => style,
+        compose: (...styles) => Object.assign({}, ...styles)
+      };
+
+      // Platform API polyfill for web
+      const Platform = {
+        OS: 'web',
+        Version: 1,
+        select: (obj) => {
+          if (obj.web !== undefined) return obj.web;
+          if (obj.default !== undefined) return obj.default;
+          return undefined;
+        },
+        isTV: false,
+        isTesting: false
       };
     `;
 
@@ -123,11 +150,11 @@ export class BundlerService {
     const importRegex = /import\s+.*?from\s+['"][^'"]+['"];?\s*\n?/g;
     const imports = code.match(importRegex) || [];
     const codeWithoutImports = code.replace(importRegex, '').trim();
-    
+
     // Ensure we have the required imports
     const hasReactImport = imports.some(imp => imp.includes('react@18.3.1'));
     const hasReactDOMImport = imports.some(imp => imp.includes('react-dom@18.3.1'));
-    
+
     // Build final module with imports at top
     return `
 ${imports.join('\n')}

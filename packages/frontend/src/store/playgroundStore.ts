@@ -342,6 +342,12 @@ export const usePlaygroundStore = create<PlaygroundState>((set, get) => ({
     const state = get();
     if (state.activeFileId === id && state.socket?.connected) {
       state.socket.emit('code:update', { code: content });
+      
+      // Broadcast to collaborators
+      const roomId = (state.socket as any).roomId;
+      if (roomId) {
+        state.socket.emit('collaboration:code-change', { roomId, fileId: id, content });
+      }
     }
   },
 

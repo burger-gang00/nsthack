@@ -1,11 +1,26 @@
+import { useEffect } from 'react';
 import MonacoEditor from '@monaco-editor/react';
 import { X } from 'lucide-react';
 import { usePlaygroundStore } from '../store/playgroundStore';
+import { useCollaborationStore } from '../store/collaborationStore';
 
 export default function Editor() {
-  const { openTabs, activeTabId, updateFileContent, closeTab, setActiveTab } = usePlaygroundStore();
+  const { openTabs, activeTabId, updateFileContent, closeTab, setActiveTab, socket } = usePlaygroundStore();
+  const { isCollaborating } = useCollaborationStore();
 
   const activeTab = openTabs.find((tab) => tab.id === activeTabId);
+
+  useEffect(() => {
+    if (!socket || !isCollaborating) return;
+
+    socket.on('collaboration:code-updated', ({ fileId, content }) => {
+      updateFileContent(fileId, content);
+    });
+
+    return () => {
+      socket.off('collaboration:code-updated');
+    };
+  }, [socket, isCollaborating]);
 
   return (
     <div className="flex-1 flex flex-col bg-gray-900">
@@ -15,8 +30,8 @@ export default function Editor() {
           <div
             key={tab.id}
             className={`flex items-center gap-2 px-4 py-2 border-r border-gray-700 cursor-pointer group min-w-[120px] ${tab.id === activeTabId
-                ? 'bg-gray-900 text-white'
-                : 'text-gray-400 hover:bg-gray-700'
+              ? 'bg-gray-900 text-white'
+              : 'text-gray-400 hover:bg-gray-700'
               }`}
             onClick={() => setActiveTab(tab.id)}
           >
