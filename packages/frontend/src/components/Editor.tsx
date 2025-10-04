@@ -1,26 +1,25 @@
-import { useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import MonacoEditor from '@monaco-editor/react';
 import { X } from 'lucide-react';
 import { usePlaygroundStore } from '../store/playgroundStore';
-import { useCollaborationStore } from '../store/collaborationStore';
 
 export default function Editor() {
-  const { openTabs, activeTabId, updateFileContent, closeTab, setActiveTab, socket } = usePlaygroundStore();
-  const { isCollaborating } = useCollaborationStore();
+  const { openTabs, activeTabId, updateFileContent, closeTab, setActiveTab } = usePlaygroundStore();
+  const isRemoteUpdate = useRef(false);
+  const timeoutRef = useRef<NodeJS.Timeout>();
 
   const activeTab = openTabs.find((tab) => tab.id === activeTabId);
 
+  // Detect remote updates
   useEffect(() => {
-    if (!socket || !isCollaborating) return;
-
-    socket.on('collaboration:code-updated', ({ fileId, content }) => {
-      updateFileContent(fileId, content);
-    });
-
-    return () => {
-      socket.off('collaboration:code-updated');
-    };
-  }, [socket, isCollaborating]);
+    if (activeTab) {
+      isRemoteUpdate.current = true;
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => {
+        isRemoteUpdate.current = false;
+      }, 100);
+    }
+  }, [activeTab?.content]);
 
   return (
     <div className="flex-1 flex flex-col bg-gray-900">
@@ -57,7 +56,13 @@ export default function Editor() {
           height="100%"
           language={activeTab.language}
           value={activeTab.content}
-          onChange={(value) => updateFileContent(activeTab.fileId, value || '')}
+          onChange={(value) => {
+            if (isRemoteUpdate.current) {
+              return; // Skip if this is a remote update
+            }
+            const newContent = value || '';
+            updateFileContent(activeTab.fileId, newContent, false);
+          }}
           theme="vs-dark"
           options={{
             minimap: { enabled: true },

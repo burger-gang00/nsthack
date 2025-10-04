@@ -14,12 +14,44 @@ export default function ShareModal({ isOpen, onClose, projectData }: ShareModalP
   const [password, setPassword] = useState('');
   const [copied, setCopied] = useState(false);
   const [showQR, setShowQR] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
+  const [shareComplete, setShareComplete] = useState(false);
 
   if (!isOpen) return null;
 
   const shareUrl = `${window.location.origin}/share/${shareId}`;
 
+  const saveProject = async () => {
+    setIsSharing(true);
+    try {
+      const response = await fetch('http://localhost:4000/api/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          shareId,
+          projectData: {
+            ...projectData,
+            visibility,
+            password: visibility === 'private' ? password : null,
+          },
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setShareComplete(true);
+      }
+    } catch (error) {
+      console.error('Failed to share:', error);
+      alert('Failed to share project. Make sure the server is running.');
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
   const copyToClipboard = async () => {
+    if (!shareComplete) {
+      await saveProject();
+    }
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
@@ -85,18 +117,24 @@ export default function ShareModal({ isOpen, onClose, projectData }: ShareModalP
           <div>
             <button
               onClick={() => setShowQR(!showQR)}
-              className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300"
+              className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg flex items-center justify-center gap-2 transition-colors"
             >
-              <QrCode className="w-4 h-4" />
-              {showQR ? 'Hide' : 'Show'} QR Code
+              <QrCode className="w-5 h-5" />
+              {showQR ? 'Hide QR Code' : 'Show QR Code for Mobile'}
             </button>
             {showQR && (
-              <div className="mt-2 p-4 bg-white rounded flex items-center justify-center">
+              <div className="mt-3 p-6 bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg border-2 border-purple-200">
                 <div className="text-center">
-                  <div className="w-48 h-48 bg-gray-200 flex items-center justify-center">
-                    <span className="text-gray-500">QR Code</span>
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(shareUrl)}`}
+                    alt="QR Code"
+                    className="w-64 h-64 mx-auto bg-white p-3 rounded-lg shadow-lg"
+                  />
+                  <div className="mt-4 space-y-2">
+                    <p className="text-sm font-semibold text-gray-800">📱 Scan with your phone</p>
+                    <p className="text-xs text-gray-600">Opens in fullscreen preview mode</p>
+                    <p className="text-xs text-gray-500">Perfect for testing on real devices!</p>
                   </div>
-                  <p className="text-xs text-gray-600 mt-2">Scan to open on mobile</p>
                 </div>
               </div>
             )}
@@ -202,13 +240,35 @@ export default function ShareModal({ isOpen, onClose, projectData }: ShareModalP
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-2 p-4 border-t border-gray-700">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
-          >
-            Close
-          </button>
+        <div className="flex justify-between items-center p-4 border-t border-gray-700">
+          {shareComplete && (
+            <div className="text-sm text-green-400 flex items-center gap-2">
+              <Check className="w-4 h-4" />
+              Project shared successfully!
+            </div>
+          )}
+          {!shareComplete && (
+            <div className="text-sm text-gray-400">
+              Click "Copy" to save and share
+            </div>
+          )}
+          <div className="flex gap-2">
+            {!shareComplete && (
+              <button
+                onClick={saveProject}
+                disabled={isSharing}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors disabled:opacity-50"
+              >
+                {isSharing ? 'Saving...' : 'Save & Share'}
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+            >
+              Close
+            </button>
+          </div>
         </div>
       </div>
     </div>

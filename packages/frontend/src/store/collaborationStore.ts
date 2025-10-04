@@ -23,11 +23,12 @@ interface CollaborationState {
   chatMessages: ChatMessage[];
   isCollaborating: boolean;
   
-  joinRoom: (roomId: string, socket: Socket) => void;
+  joinRoom: (roomId: string, socket: Socket, autoJoin?: boolean) => void;
   leaveRoom: (socket: Socket) => void;
   updateUserCursor: (userId: string, cursor: { line: number; column: number }) => void;
   addUser: (user: User) => void;
   removeUser: (userId: string) => void;
+  setUsers: (users: User[]) => void;
   sendChatMessage: (message: string, socket: Socket) => void;
   addChatMessage: (message: ChatMessage) => void;
 }
@@ -40,9 +41,13 @@ export const useCollaborationStore = create<CollaborationState>((set, get) => ({
   chatMessages: [],
   isCollaborating: false,
 
-  joinRoom: (roomId, socket) => {
+  joinRoom: (roomId, socket, autoJoin = false) => {
+    // Always prompt for name
     const userName = prompt('Enter your name:') || 'Anonymous';
     const color = colors[Math.floor(Math.random() * colors.length)];
+    
+    // Store roomId on socket for easy access
+    (socket as any).roomId = roomId;
     
     socket.emit('collaboration:join', { roomId, userName, color });
     set({ roomId, isCollaborating: true });
@@ -52,7 +57,11 @@ export const useCollaborationStore = create<CollaborationState>((set, get) => ({
     const { roomId } = get();
     if (roomId) {
       socket.emit('collaboration:leave', { roomId });
-      set({ roomId: null, users: [], isCollaborating: false });
+      
+      // Clear roomId from socket
+      (socket as any).roomId = null;
+      
+      set({ roomId: null, users: [], chatMessages: [], isCollaborating: false });
     }
   },
 
@@ -74,6 +83,10 @@ export const useCollaborationStore = create<CollaborationState>((set, get) => ({
     set((state) => ({
       users: state.users.filter((u) => u.id !== userId),
     }));
+  },
+
+  setUsers: (users) => {
+    set({ users });
   },
 
   sendChatMessage: (message, socket) => {

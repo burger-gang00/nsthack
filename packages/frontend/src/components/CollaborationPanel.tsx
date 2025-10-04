@@ -20,13 +20,14 @@ export default function CollaborationPanel() {
     sendChatMessage,
     addUser,
     removeUser,
+    setUsers,
     addChatMessage,
   } = useCollaborationStore();
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !isCollaborating) return;
 
-    socket.on('collaboration:user-joined', (user) => {
+    const handleUserJoined = (user: any) => {
       addUser(user);
       addChatMessage({
         id: Date.now().toString(),
@@ -35,9 +36,9 @@ export default function CollaborationPanel() {
         message: `${user.name} joined the session`,
         timestamp: Date.now(),
       });
-    });
+    };
 
-    socket.on('collaboration:user-left', ({ userId, userName }) => {
+    const handleUserLeft = ({ userId, userName }: any) => {
       removeUser(userId);
       addChatMessage({
         id: Date.now().toString(),
@@ -46,23 +47,28 @@ export default function CollaborationPanel() {
         message: `${userName} left the session`,
         timestamp: Date.now(),
       });
-    });
+    };
 
-    socket.on('collaboration:chat-message', (message) => {
+    const handleChatMessage = (message: any) => {
       addChatMessage(message);
-    });
+    };
 
-    socket.on('collaboration:users', (userList) => {
-      userList.forEach((user: any) => addUser(user));
-    });
+    const handleUsers = (userList: any[]) => {
+      setUsers(userList);
+    };
+
+    socket.on('collaboration:user-joined', handleUserJoined);
+    socket.on('collaboration:user-left', handleUserLeft);
+    socket.on('collaboration:chat-message', handleChatMessage);
+    socket.on('collaboration:users', handleUsers);
 
     return () => {
-      socket.off('collaboration:user-joined');
-      socket.off('collaboration:user-left');
-      socket.off('collaboration:chat-message');
-      socket.off('collaboration:users');
+      socket.off('collaboration:user-joined', handleUserJoined);
+      socket.off('collaboration:user-left', handleUserLeft);
+      socket.off('collaboration:chat-message', handleChatMessage);
+      socket.off('collaboration:users', handleUsers);
     };
-  }, [socket]);
+  }, [socket, isCollaborating, addUser, removeUser, setUsers, addChatMessage]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -70,7 +76,12 @@ export default function CollaborationPanel() {
 
   const handleJoinRoom = () => {
     if (!socket) return;
-    const newRoomId = prompt('Enter room ID (or leave empty for new room):') || Date.now().toString();
+    
+    // Check if there's a share room ID from URL
+    const shareRoomId = (window as any).shareRoomId;
+    const defaultRoomId = shareRoomId || '';
+    
+    const newRoomId = prompt('Enter room ID (or leave empty for new room):', defaultRoomId) || Date.now().toString();
     joinRoom(newRoomId, socket);
   };
 

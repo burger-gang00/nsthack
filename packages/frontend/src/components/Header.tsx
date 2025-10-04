@@ -5,6 +5,8 @@ import { useThemeStore } from '../store/themeStore';
 import ShareModal from './ShareModal';
 import DownloadModal from './DownloadModal';
 import SettingsModal from './SettingsModal';
+import GitHubExport from './GitHubExport';
+import ScreenRecorder from './ScreenRecorder';
 
 export default function Header() {
   const { isConnected, files, openTabs } = usePlaygroundStore();
@@ -36,6 +38,8 @@ export default function Header() {
         </div>
 
         <div className="flex items-center gap-2">
+          <ScreenRecorder />
+          
           <button
             onClick={() => setShowShare(true)}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors"
@@ -44,6 +48,8 @@ export default function Header() {
             <Share2 className="w-4 h-4" />
             Share
           </button>
+
+          <GitHubExport projectData={{ files, openTabs }} />
 
           <button
             onClick={() => setShowDownload(true)}

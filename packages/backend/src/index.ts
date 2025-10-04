@@ -22,6 +22,29 @@ app.use(express.json());
 
 const bundler = new BundlerService();
 const aiAgents = new Map<string, AIAgent>(); // One agent per socket connection
+const sharedProjects = new Map<string, any>(); // Store shared projects in memory
+
+// REST API for sharing
+app.post('/api/share', (req, res) => {
+  const { shareId, projectData } = req.body;
+  sharedProjects.set(shareId, {
+    ...projectData,
+    createdAt: Date.now(),
+    views: 0,
+  });
+  res.json({ success: true, shareId });
+});
+
+app.get('/api/share/:shareId', (req, res) => {
+  const { shareId } = req.params;
+  const project = sharedProjects.get(shareId);
+  if (project) {
+    project.views++;
+    res.json({ success: true, project });
+  } else {
+    res.status(404).json({ success: false, error: 'Project not found' });
+  }
+});
 
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
@@ -217,7 +240,29 @@ io.on('connection', (socket) => {
   });
 
   socket.on('collaboration:code-change', ({ roomId, fileId, content }) => {
+    console.log(`Code change in room ${roomId}, file ${fileId}, broadcasting to others`);
     socket.to(roomId).emit('collaboration:code-updated', { fileId, content });
+    
+    // Update shared project if this is a share room
+    if (sharedProjects.has(roomId)) {
+      const project = sharedProjects.get(roomId);
+      if (project && project.files) {
+        // Update file in project
+        const updateFileInTree = (nodes: any[]): any[] => {
+          return nodes.map((node: any) => {
+            if (node.id === fileId) {
+              return { ...node, content };
+            }
+            if (node.children) {
+              return { ...node, children: updateFileInTree(node.children) };
+            }
+            return node;
+          });
+        };
+        project.files = updateFileInTree(project.files);
+        sharedProjects.set(roomId, project);
+      }
+    }
   });
 
   socket.on('collaboration:cursor', ({ roomId, cursor }) => {
@@ -225,6 +270,19 @@ io.on('connection', (socket) => {
       userId: socket.id,
       cursor,
     });
+  });
+
+  // File locking
+  socket.on('file:lock', ({ roomId, fileId }) => {
+    io.in(roomId).emit('file:locked', {
+      fileId,
+      userId: socket.id,
+      userName: socket.data?.userName || 'Anonymous',
+    });
+  });
+
+  socket.on('file:unlock', ({ roomId, fileId }) => {
+    io.in(roomId).emit('file:unlocked', { fileId });
   });
 
   socket.on('disconnect', () => {

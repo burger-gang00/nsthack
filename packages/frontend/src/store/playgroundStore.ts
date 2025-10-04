@@ -9,40 +9,40 @@ interface PlaygroundState {
   activeFileId: string | null;
   openTabs: EditorTab[];
   activeTabId: string | null;
-  
+
   // Code & bundling
   bundledCode: string;
   isConnected: boolean;
   isLoading: boolean;
   error: string | null;
-  
+
   // Console
   logs: ConsoleLog[];
-  
+
   // Preview
   socket: Socket | null;
   previewMode: 'web' | 'ios' | 'android';
   deviceFrame: string;
-  
+
   // File operations
   createFile: (name: string, parentId?: string) => void;
   createFolder: (name: string, parentId?: string) => void;
   deleteFile: (id: string) => void;
   renameFile: (id: string, newName: string) => void;
-  updateFileContent: (id: string, content: string) => void;
+  updateFileContent: (id: string, content: string, skipBroadcast?: boolean) => void;
   openFile: (fileId: string) => void;
   closeTab: (tabId: string) => void;
   setActiveTab: (tabId: string) => void;
-  
+
   // Code operations
   setBundledCode: (code: string) => void;
   setPreviewMode: (mode: 'web' | 'ios' | 'android') => void;
   setDeviceFrame: (frame: string) => void;
-  
+
   // Console operations
   addLog: (log: Omit<ConsoleLog, 'id' | 'timestamp'>) => void;
   clearLogs: () => void;
-  
+
   // Connection
   connect: () => void;
   disconnect: () => void;
@@ -176,16 +176,16 @@ export const usePlaygroundStore = create<PlaygroundState>((set, get) => ({
     },
   ],
   activeTabId: 'tab-app-tsx',
-  
+
   // Code & bundling
   bundledCode: '',
   isConnected: false,
   isLoading: false,
   error: null,
-  
+
   // Console
   logs: [],
-  
+
   // Preview
   socket: null,
   previewMode: 'web',
@@ -201,7 +201,7 @@ export const usePlaygroundStore = create<PlaygroundState>((set, get) => ({
       language: name.endsWith('.tsx') || name.endsWith('.ts') ? 'typescript' : 'javascript',
       parentId,
     };
-    
+
     set((state) => {
       const updateChildren = (nodes: FileNode[]): FileNode[] => {
         return nodes.map((node) => {
@@ -220,10 +220,10 @@ export const usePlaygroundStore = create<PlaygroundState>((set, get) => ({
           return node;
         });
       };
-      
+
       return { files: updateChildren(state.files) };
     });
-    
+
     // Auto-open the new file
     setTimeout(() => get().openFile(newFile.id), 100);
   },
@@ -237,7 +237,7 @@ export const usePlaygroundStore = create<PlaygroundState>((set, get) => ({
       parentId,
       isOpen: true,
     };
-    
+
     set((state) => {
       const updateChildren = (nodes: FileNode[]): FileNode[] => {
         return nodes.map((node) => {
@@ -256,7 +256,7 @@ export const usePlaygroundStore = create<PlaygroundState>((set, get) => ({
           return node;
         });
       };
-      
+
       return { files: updateChildren(state.files) };
     });
   },
@@ -272,14 +272,14 @@ export const usePlaygroundStore = create<PlaygroundState>((set, get) => ({
           return true;
         });
       };
-      
+
       // Close tab if open
       const openTabs = state.openTabs.filter((tab) => tab.fileId !== id);
-      const activeTabId = state.activeTabId === `tab-${id}` 
-        ? (openTabs[0]?.id || null) 
+      const activeTabId = state.activeTabId === `tab-${id}`
+        ? (openTabs[0]?.id || null)
         : state.activeTabId;
-      
-      return { 
+
+      return {
         files: removeNode(state.files),
         openTabs,
         activeTabId,
@@ -300,20 +300,20 @@ export const usePlaygroundStore = create<PlaygroundState>((set, get) => ({
           return node;
         });
       };
-      
+
       // Update tab name if open
-      const openTabs = state.openTabs.map((tab) => 
+      const openTabs = state.openTabs.map((tab) =>
         tab.fileId === id ? { ...tab, name: newName } : tab
       );
-      
-      return { 
+
+      return {
         files: updateNode(state.files),
         openTabs,
       };
     });
   },
 
-  updateFileContent: (id, content) => {
+  updateFileContent: (id, content, skipBroadcast = false) => {
     set((state) => {
       const updateNode = (nodes: FileNode[]): FileNode[] => {
         return nodes.map((node) => {
@@ -326,27 +326,32 @@ export const usePlaygroundStore = create<PlaygroundState>((set, get) => ({
           return node;
         });
       };
-      
+
       // Update tab content
-      const openTabs = state.openTabs.map((tab) => 
+      const openTabs = state.openTabs.map((tab) =>
         tab.fileId === id ? { ...tab, content, isDirty: true } : tab
       );
-      
-      return { 
+
+      return {
         files: updateNode(state.files),
         openTabs,
       };
     });
-    
+
     // Send to backend for bundling if it's the active file
     const state = get();
     if (state.activeFileId === id && state.socket?.connected) {
       state.socket.emit('code:update', { code: content });
-      
-      // Broadcast to collaborators
+    }
+
+    // Broadcast to collaborators (skip if this update came from a collaborator)
+    if (!skipBroadcast && state.socket?.connected) {
       const roomId = (state.socket as any).roomId;
       if (roomId) {
+        console.log('Broadcasting code change to room:', roomId, 'file:', id);
         state.socket.emit('collaboration:code-change', { roomId, fileId: id, content });
+      } else {
+        console.log('No roomId found, not broadcasting');
       }
     }
   },
@@ -363,17 +368,17 @@ export const usePlaygroundStore = create<PlaygroundState>((set, get) => ({
       }
       return null;
     };
-    
+
     const file = findFile(state.files);
     if (!file) return;
-    
+
     // Check if already open
     const existingTab = state.openTabs.find((tab) => tab.fileId === fileId);
     if (existingTab) {
       set({ activeTabId: existingTab.id, activeFileId: fileId });
       return;
     }
-    
+
     // Create new tab
     const newTab: EditorTab = {
       id: `tab-${fileId}`,
@@ -383,7 +388,7 @@ export const usePlaygroundStore = create<PlaygroundState>((set, get) => ({
       isDirty: false,
       language: file.language || 'typescript',
     };
-    
+
     set((state) => ({
       openTabs: [...state.openTabs, newTab],
       activeTabId: newTab.id,
@@ -394,13 +399,13 @@ export const usePlaygroundStore = create<PlaygroundState>((set, get) => ({
   closeTab: (tabId) => {
     set((state) => {
       const openTabs = state.openTabs.filter((tab) => tab.id !== tabId);
-      const activeTabId = state.activeTabId === tabId 
-        ? (openTabs[0]?.id || null) 
+      const activeTabId = state.activeTabId === tabId
+        ? (openTabs[0]?.id || null)
         : state.activeTabId;
-      const activeFileId = activeTabId 
+      const activeFileId = activeTabId
         ? openTabs.find((tab) => tab.id === activeTabId)?.fileId || null
         : null;
-      
+
       return { openTabs, activeTabId, activeFileId };
     });
   },
@@ -460,6 +465,13 @@ export const usePlaygroundStore = create<PlaygroundState>((set, get) => ({
 
     socket.on('console:log', ({ type, message }) => {
       get().addLog({ type, message });
+    });
+
+    // Real-time collaboration code sync
+    socket.on('collaboration:code-updated', ({ fileId, content }) => {
+      console.log('Received code update for file:', fileId);
+      // Update file content without broadcasting back (skipBroadcast = true)
+      get().updateFileContent(fileId, content, true);
     });
 
     set({ socket });
