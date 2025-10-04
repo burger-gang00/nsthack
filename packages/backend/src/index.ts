@@ -198,13 +198,13 @@ io.on('connection', (socket) => {
   // Collaboration endpoints
   socket.on('collaboration:join', ({ roomId, userName, color }) => {
     console.log(`User ${userName} joining room ${roomId}`);
-    
+
     // Set socket data FIRST before joining room
     socket.data = { userName, color, roomId };
-    
+
     // Join the room
     socket.join(roomId);
-    
+
     const user = {
       id: socket.id,
       name: userName,
@@ -291,6 +291,239 @@ io.on('connection', (socket) => {
 
   socket.on('file:unlock', ({ roomId, fileId }) => {
     io.in(roomId).emit('file:unlocked', { fileId });
+  });
+
+  // Terminal command execution with persistent working directory
+  if (!socket.data) socket.data = {};
+  socket.data.terminalCwd = socket.data.terminalCwd || '/project';
+
+  socket.on('terminal:command', async ({ command }) => {
+    try {
+      const { exec } = await import('child_process');
+      const { promisify } = await import('util');
+      const path = await import('path');
+      const fs = await import('fs');
+      const execAsync = promisify(exec);
+
+      console.log(`Executing command: ${command} in ${socket.data.terminalCwd}`);
+
+      const cmd = command.trim();
+
+      // Handle clear
+      if (cmd === 'clear') {
+        socket.emit('terminal:output', { output: '', cwd: socket.data.terminalCwd });
+        return;
+      }
+
+      // Handle cd command
+      if (cmd.startsWith('cd ')) {
+        const targetDir = cmd.substring(3).trim();
+
+        // Handle virtual paths
+        if (targetDir === '/' || targetDir === '~' || targetDir === '/project') {
+          socket.data.terminalCwd = '/project';
+          socket.emit('terminal:output', { output: '', cwd: '/project' });
+          return;
+        }
+
+        // Handle relative paths in virtual filesystem
+        const validDirs = ['components', 'utils', 'node_modules', '..'];
+        if (validDirs.includes(targetDir)) {
+          if (targetDir === '..') {
+            socket.data.terminalCwd = '/project';
+          } else {
+            socket.data.terminalCwd = `/project/${targetDir}`;
+          }
+          socket.emit('terminal:output', { output: '', cwd: socket.data.terminalCwd });
+          return;
+        }
+
+        socket.emit('terminal:output', {
+          output: `cd: ${targetDir}: No such directory`,
+          cwd: socket.data.terminalCwd
+        });
+        return;
+      }
+
+      // Handle ls command for virtual filesystem
+      if (cmd === 'ls' || cmd === 'ls -la' || cmd === 'ls -l') {
+        let output = '';
+        if (socket.data.terminalCwd === '/project') {
+          output = `package.json
+app.json
+App.tsx
+components/
+utils/
+node_modules/
+.gitignore
+README.md`;
+        } else if (socket.data.terminalCwd === '/project/components') {
+          output = '(empty directory - create files here)';
+        } else if (socket.data.terminalCwd === '/project/utils') {
+          output = '(empty directory - create files here)';
+        } else if (socket.data.terminalCwd === '/project/node_modules') {
+          output = 'react/\nreact-native/\n(installed packages)';
+        }
+        socket.emit('terminal:output', { output, cwd: socket.data.terminalCwd });
+        return;
+      }
+
+      // Handle pwd
+      if (cmd === 'pwd') {
+        socket.emit('terminal:output', {
+          output: socket.data.terminalCwd,
+          cwd: socket.data.terminalCwd
+        });
+        return;
+      }
+
+      // Handle cat for virtual files
+      if (cmd.startsWith('cat ')) {
+        const filename = cmd.substring(4).trim();
+        
+        if (filename === 'package.json' && socket.data.terminalCwd === '/project') {
+          const packageJson = {
+            name: 'react-native-playground',
+            version: '1.0.0',
+            main: 'App.tsx',
+            scripts: {
+              start: 'expo start',
+              android: 'expo start --android',
+              ios: 'expo start --ios',
+              web: 'expo start --web'
+            },
+            dependencies: {
+              'react': '^18.2.0',
+              'react-native': '^0.72.0',
+              'expo': '~49.0.0'
+            }
+          };
+          socket.emit('terminal:output', { 
+            output: JSON.stringify(packageJson, null, 2),
+            cwd: socket.data.terminalCwd 
+          });
+          return;
+        }
+        
+        if (filename === 'app.json' && socket.data.terminalCwd === '/project') {
+          const appJson = {
+            expo: {
+              name: 'React Native Playground',
+              slug: 'rn-playground',
+              version: '1.0.0',
+              platforms: ['ios', 'android', 'web']
+            }
+          };
+          socket.emit('terminal:output', { 
+            output: JSON.stringify(appJson, null, 2),
+            cwd: socket.data.terminalCwd 
+          });
+          return;
+        }
+        
+        if (filename === 'App.tsx' && socket.data.terminalCwd === '/project') {
+          socket.emit('terminal:output', {
+            output: '// App.tsx - Main application file\nimport React from \'react\';\nimport { View, Text } from \'react-native\';\n\nexport default function App() {\n  return <View><Text>Hello!</Text></View>;\n}',
+            cwd: socket.data.terminalCwd
+          });
+          return;
+        }
+        
+        if (filename === 'README.md' && socket.data.terminalCwd === '/project') {
+          socket.emit('terminal:output', { 
+            output: '# React Native Playground\n\nWeb-based React Native development.\n\n## Commands\n- npm install <pkg>\n- ls, cat, pwd, cd',
+            cwd: socket.data.terminalCwd 
+          });
+          return;
+        }
+        
+        socket.emit('terminal:output', {
+          output: `cat: ${filename}: No such file or directory`,
+          cwd: socket.data.terminalCwd
+        });
+        return;
+      }
+
+      // Handle npm install - update package.json after install
+      if (cmd.startsWith('npm install ') || cmd.startsWith('npm i ')) {
+        try {
+          const { stdout, stderr } = await execAsync(command, {
+            cwd: process.cwd(),
+            timeout: 60000,
+            maxBuffer: 1024 * 1024
+          });
+
+          const output = stdout + (stderr ? '\n' + stderr : '');
+          
+          // Read actual package.json from backend
+          const packageJsonPath = path.join(process.cwd(), 'package.json');
+          if (fs.existsSync(packageJsonPath)) {
+            const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+            
+            // Send updated package.json to frontend
+            socket.emit('file:update', {
+              fileId: 'package-json',
+              content: JSON.stringify(packageJson, null, 2)
+            });
+          }
+          
+          socket.emit('terminal:output', {
+            output: output + '\n✓ package.json updated',
+            cwd: socket.data.terminalCwd
+          });
+          return;
+        } catch (error: any) {
+          socket.emit('terminal:output', {
+            output: `Error: ${error.message}`,
+            cwd: socket.data.terminalCwd
+          });
+          return;
+        }
+      }
+
+      // Handle git commands
+      if (cmd.startsWith('git ')) {
+        try {
+          const { stdout, stderr } = await execAsync(command, {
+            cwd: process.cwd(),
+            timeout: 30000,
+            maxBuffer: 1024 * 1024
+          });
+
+          const output = stdout + (stderr ? '\n' + stderr : '');
+          socket.emit('terminal:output', {
+            output: output || 'Git command executed',
+            cwd: socket.data.terminalCwd
+          });
+          return;
+        } catch (error: any) {
+          socket.emit('terminal:output', {
+            output: `Error: ${error.message}`,
+            cwd: socket.data.terminalCwd
+          });
+          return;
+        }
+      }
+
+      // For other commands, execute in real backend directory
+      const { stdout, stderr } = await execAsync(command, {
+        cwd: process.cwd(),
+        timeout: 30000,
+        maxBuffer: 1024 * 1024
+      });
+
+      const output = stdout + (stderr ? '\n' + stderr : '');
+      socket.emit('terminal:output', {
+        output: output || 'Command executed successfully',
+        cwd: socket.data.terminalCwd
+      });
+    } catch (error: any) {
+      console.error('Terminal command error:', error);
+      socket.emit('terminal:output', {
+        output: `Error: ${error.message}`,
+        cwd: socket.data.terminalCwd
+      });
+    }
   });
 
   socket.on('disconnect', () => {

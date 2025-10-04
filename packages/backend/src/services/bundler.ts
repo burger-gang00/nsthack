@@ -22,10 +22,10 @@ export class BundlerService {
       // Transform React Native code to web-compatible code
       const webCode = this.transformToWeb(code);
 
-      // Transpile with Babel with advanced options
+      // Transpile with Babel using classic JSX runtime (no jsx-runtime import needed)
       const result = transform(webCode, {
         presets: [
-          ['react', { runtime: 'automatic', development: false }],
+          ['react', { runtime: 'classic', pragma: 'React.createElement' }],
           ['typescript', {
             onlyRemoveTypeImports: true,
             allowDeclareFields: true,

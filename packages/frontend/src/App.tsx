@@ -12,11 +12,9 @@ import CollaborationPanel from './components/CollaborationPanel';
 import LivePresence from './components/LivePresence';
 import CursorPresence from './components/CursorPresence';
 import FileLock from './components/FileLock';
-import VersionHistory from './components/VersionHistory';
-import PerformanceMonitor from './components/PerformanceMonitor';
 
 function App() {
-  const { connect, isConnected, socket, activeFileId, updateFileContent } = usePlaygroundStore();
+  const { connect, isConnected, socket } = usePlaygroundStore();
   const { joinRoom } = useCollaborationStore();
 
   // Detect if mobile device
@@ -97,15 +95,6 @@ function App() {
       <LivePresence />
       <CursorPresence />
       <FileLock />
-      <VersionHistory
-        fileId={activeFileId || ''}
-        onRestore={(content) => {
-          if (activeFileId) {
-            updateFileContent(activeFileId, content);
-          }
-        }}
-      />
-      <PerformanceMonitor />
       <Notifications />
       {!isConnected && (
         <div className="fixed top-16 right-4 bg-yellow-500 text-black px-4 py-2 rounded shadow-lg z-50">

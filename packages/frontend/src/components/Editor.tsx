@@ -63,6 +63,31 @@ export default function Editor() {
             const newContent = value || '';
             updateFileContent(activeTab.fileId, newContent, false);
           }}
+          beforeMount={(monaco) => {
+            // Disable annoying TypeScript errors
+            monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+              noSemanticValidation: false,
+              noSyntaxValidation: false,
+              diagnosticCodesToIgnore: [1005, 2792, 2304, 7016, 7006, 2307, 2345]
+            });
+
+            monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+              target: monaco.languages.typescript.ScriptTarget.ES2020,
+              allowNonTsExtensions: true,
+              moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+              module: monaco.languages.typescript.ModuleKind.ESNext,
+              noEmit: true,
+              esModuleInterop: true,
+              jsx: monaco.languages.typescript.JsxEmit.React,
+              reactNamespace: 'React',
+              allowJs: true,
+              checkJs: false,
+              strict: false,
+              noImplicitAny: false,
+              skipLibCheck: true,
+              allowSyntheticDefaultImports: true
+            });
+          }}
           theme="vs-dark"
           options={{
             minimap: { enabled: true },

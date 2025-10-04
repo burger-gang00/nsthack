@@ -136,11 +136,95 @@ const initialFiles: FileNode[] = [
     type: 'folder',
     children: [
       {
+        id: 'package-json',
+        name: 'package.json',
+        type: 'file',
+        content: JSON.stringify({
+          name: 'react-native-playground',
+          version: '1.0.0',
+          main: 'App.tsx',
+          scripts: {
+            start: 'expo start',
+            android: 'expo start --android',
+            ios: 'expo start --ios',
+            web: 'expo start --web'
+          },
+          dependencies: {
+            'react': '^18.2.0',
+            'react-native': '^0.72.0',
+            'expo': '~49.0.0'
+          }
+        }, null, 2),
+        language: 'json',
+        parentId: 'root',
+      },
+      {
+        id: 'app-json',
+        name: 'app.json',
+        type: 'file',
+        content: JSON.stringify({
+          expo: {
+            name: 'React Native Playground',
+            slug: 'rn-playground',
+            version: '1.0.0',
+            orientation: 'portrait',
+            platforms: ['ios', 'android', 'web']
+          }
+        }, null, 2),
+        language: 'json',
+        parentId: 'root',
+      },
+      {
         id: 'app-tsx',
         name: 'App.tsx',
         type: 'file',
         content: defaultCode,
         language: 'typescript',
+        parentId: 'root',
+      },
+      {
+        id: 'readme-md',
+        name: 'README.md',
+        type: 'file',
+        content: `# React Native Playground
+
+A web-based React Native development environment.
+
+## Getting Started
+
+1. Edit App.tsx to see live preview
+2. Create components in the components/ folder
+3. Install packages with terminal: \`npm install <package>\`
+
+## Available Commands
+
+- \`npm install <package>\` - Install a package
+- \`npm start\` - Start the app
+- \`ls\` - List files
+- \`cat <file>\` - View file contents
+
+## Features
+
+- Live preview
+- Real-time collaboration
+- AI code assistant
+- Terminal access
+- Multi-file support
+`,
+        language: 'markdown',
+        parentId: 'root',
+      },
+      {
+        id: 'gitignore',
+        name: '.gitignore',
+        type: 'file',
+        content: `node_modules/
+.expo/
+.expo-shared/
+*.log
+.DS_Store
+`,
+        language: 'plaintext',
         parentId: 'root',
       },
       {
@@ -473,6 +557,12 @@ export const usePlaygroundStore = create<PlaygroundState>((set, get) => ({
     socket.on('collaboration:code-updated', ({ fileId, content }) => {
       console.log('Received code update for file:', fileId);
       // Update file content without broadcasting back (skipBroadcast = true)
+      get().updateFileContent(fileId, content, true);
+    });
+
+    // Listen for file updates from terminal (npm install, etc.)
+    socket.on('file:update', ({ fileId, content }) => {
+      console.log('File updated from terminal:', fileId);
       get().updateFileContent(fileId, content, true);
     });
 

@@ -5,7 +5,6 @@ import { useThemeStore } from '../store/themeStore';
 import ShareModal from './ShareModal';
 import DownloadModal from './DownloadModal';
 import SettingsModal from './SettingsModal';
-import GitHubExport from './GitHubExport';
 import ScreenRecorder from './ScreenRecorder';
 
 export default function Header() {
@@ -48,8 +47,6 @@ export default function Header() {
             <Share2 className="w-4 h-4" />
             Share
           </button>
-
-          <GitHubExport projectData={{ files, openTabs }} />
 
           <button
             onClick={() => setShowDownload(true)}
