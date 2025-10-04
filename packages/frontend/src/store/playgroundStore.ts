@@ -341,7 +341,9 @@ export const usePlaygroundStore = create<PlaygroundState>((set, get) => ({
     // Send to backend for bundling if it's the active file
     const state = get();
     if (state.activeFileId === id && state.socket?.connected) {
-      state.socket.emit('code:update', { code: content });
+      // Collect all files for multi-file bundling
+      const allFiles = get().collectAllFiles(state.files);
+      state.socket.emit('code:update', { code: content, files: allFiles });
     }
 
     // Broadcast to collaborators (skip if this update came from a collaborator)
@@ -483,5 +485,25 @@ export const usePlaygroundStore = create<PlaygroundState>((set, get) => ({
       socket.disconnect();
       set({ socket: null, isConnected: false });
     }
+  },
+
+  collectAllFiles: (nodes: FileNode[]): any[] => {
+    const files: any[] = [];
+    const traverse = (nodeList: FileNode[]) => {
+      nodeList.forEach(node => {
+        if (node.type === 'file' && node.content) {
+          files.push({
+            id: node.id,
+            name: node.name,
+            content: node.content
+          });
+        }
+        if (node.children) {
+          traverse(node.children);
+        }
+      });
+    };
+    traverse(nodes);
+    return files;
   },
 }));

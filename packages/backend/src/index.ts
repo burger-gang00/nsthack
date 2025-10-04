@@ -48,28 +48,28 @@ app.get('/api/share/:shareId', (req, res) => {
 
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
-  
+
   // Create AI agent for this connection
   const aiAgent = new AIAgent();
   aiAgents.set(socket.id, aiAgent);
 
-  socket.on('code:update', async ({ code }) => {
+  socket.on('code:update', async ({ code, files }) => {
     try {
-      console.log('Bundling code...');
-      const bundledCode = await bundler.bundle(code);
+      console.log('Bundling code...', files ? `with ${files.length} files` : 'single file');
+      const bundledCode = await bundler.bundle(code, files);
       socket.emit('bundle:ready', { code: bundledCode });
-      socket.emit('console:log', { 
-        type: 'info', 
-        message: 'Bundle compiled successfully' 
+      socket.emit('console:log', {
+        type: 'info',
+        message: `✓ Bundle compiled successfully ${files ? `(${files.length} files)` : ''}`
       });
     } catch (error: any) {
       console.error('Bundle error:', error);
-      socket.emit('bundle:ready', { 
-        error: error.message || 'Failed to bundle code' 
+      socket.emit('bundle:ready', {
+        error: error.message || 'Failed to bundle code'
       });
-      socket.emit('console:log', { 
-        type: 'error', 
-        message: error.message || 'Bundle failed' 
+      socket.emit('console:log', {
+        type: 'error',
+        message: `✗ ${error.message || 'Bundle failed'}`
       });
     }
   });
@@ -197,27 +197,33 @@ io.on('connection', (socket) => {
 
   // Collaboration endpoints
   socket.on('collaboration:join', ({ roomId, userName, color }) => {
+    console.log(`User ${userName} joining room ${roomId}`);
+    
+    // Set socket data FIRST before joining room
+    socket.data = { userName, color, roomId };
+    
+    // Join the room
     socket.join(roomId);
+    
     const user = {
       id: socket.id,
       name: userName,
       color,
     };
-    
-    // Notify others in room
+
+    // Notify others in room that new user joined
     socket.to(roomId).emit('collaboration:user-joined', user);
-    
-    // Send existing users to new user
+
+    // Send existing users to new user (including themselves)
     io.in(roomId).fetchSockets().then((sockets) => {
       const users = sockets.map((s: any) => ({
         id: s.id,
         name: s.data?.userName || 'Anonymous',
         color: s.data?.color || '#4ECDC4',
       }));
+      console.log(`Sending ${users.length} users to ${userName}:`, users.map(u => u.name));
       socket.emit('collaboration:users', users);
     });
-    
-    socket.data = { userName, color, roomId };
   });
 
   socket.on('collaboration:leave', ({ roomId }) => {
@@ -229,6 +235,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('collaboration:chat', ({ roomId, message }) => {
+    console.log(`Chat from ${socket.data?.userName} in room ${roomId}: ${message}`);
     const chatMessage = {
       id: Date.now().toString(),
       userId: socket.id,
@@ -236,13 +243,14 @@ io.on('connection', (socket) => {
       message,
       timestamp: Date.now(),
     };
+    // Broadcast to ALL users in room (including sender)
     io.in(roomId).emit('collaboration:chat-message', chatMessage);
   });
 
   socket.on('collaboration:code-change', ({ roomId, fileId, content }) => {
     console.log(`Code change in room ${roomId}, file ${fileId}, broadcasting to others`);
     socket.to(roomId).emit('collaboration:code-updated', { fileId, content });
-    
+
     // Update shared project if this is a share room
     if (sharedProjects.has(roomId)) {
       const project = sharedProjects.get(roomId);
@@ -288,7 +296,7 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
     aiAgents.delete(socket.id);
-    
+
     // Notify room members
     if (socket.data?.roomId) {
       socket.to(socket.data.roomId).emit('collaboration:user-left', {

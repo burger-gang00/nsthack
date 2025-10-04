@@ -28,6 +28,7 @@ export default function CollaborationPanel() {
     if (!socket || !isCollaborating) return;
 
     const handleUserJoined = (user: any) => {
+      console.log('User joined:', user);
       addUser(user);
       addChatMessage({
         id: Date.now().toString(),
@@ -50,10 +51,12 @@ export default function CollaborationPanel() {
     };
 
     const handleChatMessage = (message: any) => {
+      console.log('Chat message received:', message);
       addChatMessage(message);
     };
 
     const handleUsers = (userList: any[]) => {
+      console.log('Received users list:', userList);
       setUsers(userList);
     };
 
