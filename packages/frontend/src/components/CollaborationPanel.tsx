@@ -1,12 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
-import { Users, MessageCircle, X, Send, UserPlus, LogOut } from 'lucide-react';
+import { Users, MessageCircle, X, Send, UserPlus, LogOut, Video } from 'lucide-react';
 import { useCollaborationStore } from '../store/collaborationStore';
 import { usePlaygroundStore } from '../store/playgroundStore';
+import VideoCall from './VideoCall';
+import IncomingCall from './IncomingCall';
 
 export default function CollaborationPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'users' | 'chat'>('users');
   const [chatInput, setChatInput] = useState('');
+  const [activeCall, setActiveCall] = useState<{ userId: string; userName: string } | null>(null);
+  const [incomingCall, setIncomingCall] = useState<{ userId: string; userName: string; offer: RTCSessionDescriptionInit } | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   
   const { socket } = usePlaygroundStore();
@@ -60,16 +64,22 @@ export default function CollaborationPanel() {
       setUsers(userList);
     };
 
+    const handleIncomingCall = ({ callerUserId, callerUserName, offer }: any) => {
+      setIncomingCall({ userId: callerUserId, userName: callerUserName, offer });
+    };
+
     socket.on('collaboration:user-joined', handleUserJoined);
     socket.on('collaboration:user-left', handleUserLeft);
     socket.on('collaboration:chat-message', handleChatMessage);
     socket.on('collaboration:users', handleUsers);
+    socket.on('video:incoming-call', handleIncomingCall);
 
     return () => {
       socket.off('collaboration:user-joined', handleUserJoined);
       socket.off('collaboration:user-left', handleUserLeft);
       socket.off('collaboration:chat-message', handleChatMessage);
       socket.off('collaboration:users', handleUsers);
+      socket.off('video:incoming-call', handleIncomingCall);
     };
   }, [socket, isCollaborating, addUser, removeUser, setUsers, addChatMessage]);
 
@@ -117,6 +127,7 @@ export default function CollaborationPanel() {
   }
 
   return (
+    <>
     <div className="fixed bottom-4 right-4 w-96 h-[500px] bg-gray-800 border border-gray-700 rounded-lg shadow-2xl flex flex-col z-40">
       <div className="flex items-center justify-between p-4 border-b border-gray-700 bg-gradient-to-r from-green-600 to-teal-600">
         <div className="flex items-center gap-2">
@@ -196,6 +207,15 @@ export default function CollaborationPanel() {
                         </div>
                       )}
                     </div>
+                    {user.id !== socket?.id && (
+                      <button
+                        onClick={() => setActiveCall({ userId: user.id, userName: user.name })}
+                        className="p-1 hover:bg-gray-600 rounded transition-colors"
+                        title={`Video call with ${user.name}`}
+                      >
+                        <Video className="w-4 h-4 text-blue-400" />
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>
@@ -259,5 +279,29 @@ export default function CollaborationPanel() {
         </>
       )}
     </div>
+
+    {/* Video Call */}
+    {activeCall && (
+      <VideoCall
+        targetUserId={activeCall.userId}
+        targetUserName={activeCall.userName}
+        onClose={() => setActiveCall(null)}
+      />
+    )}
+
+    {/* Incoming Call */}
+    {incomingCall && (
+      <IncomingCall
+        callerUserId={incomingCall.userId}
+        callerUserName={incomingCall.userName}
+        offer={incomingCall.offer}
+        onAccept={() => {
+          setActiveCall({ userId: incomingCall.userId, userName: incomingCall.userName });
+          setIncomingCall(null);
+        }}
+        onReject={() => setIncomingCall(null)}
+      />
+    )}
+    </>
   );
 }

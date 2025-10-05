@@ -373,6 +373,32 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Video call signaling
+  socket.on('video:call-user', ({ targetUserId, offer }) => {
+    console.log(`Video call from ${socket.id} to ${targetUserId}`);
+    io.to(targetUserId).emit('video:incoming-call', {
+      callerUserId: socket.id,
+      callerUserName: socket.data?.userName || 'Anonymous',
+      offer
+    });
+  });
+
+  socket.on('video:answer-call', ({ targetUserId, answer }) => {
+    io.to(targetUserId).emit('video:call-answered', { answer });
+  });
+
+  socket.on('video:ice-candidate', ({ targetUserId, candidate }) => {
+    io.to(targetUserId).emit('video:ice-candidate', { candidate });
+  });
+
+  socket.on('video:end-call', ({ targetUserId }) => {
+    io.to(targetUserId).emit('video:call-ended');
+  });
+
+  socket.on('video:reject-call', ({ targetUserId }) => {
+    io.to(targetUserId).emit('video:call-ended');
+  });
+
   // Collaboration endpoints
   socket.on('collaboration:join', async ({ roomId, userName, color, userId }) => {
     console.log(`User ${userName} joining room ${roomId}`);
