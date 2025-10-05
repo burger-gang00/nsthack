@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { io, Socket } from 'socket.io-client';
 import { FileNode, EditorTab, ConsoleLog } from '../types';
 import { nanoid } from 'nanoid';
+import { API_URL } from '../config';
 
 interface PlaygroundState {
   // File system
@@ -463,7 +464,7 @@ export const usePlaygroundStore = create<PlaygroundState>((set, get) => ({
         // Debounce sync by 1 second
         (window as any).__syncTimeout = setTimeout(() => {
           const allFiles = get().collectAllFiles(state.files);
-          fetch('http://localhost:4000/api/share', {
+          fetch(`${API_URL}/api/share`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -560,7 +561,7 @@ export const usePlaygroundStore = create<PlaygroundState>((set, get) => ({
   clearLogs: () => set({ logs: [] }),
 
   connect: () => {
-    const socket = io('http://localhost:4000', {
+    const socket = io(API_URL, {
       transports: ['websocket', 'polling'],
     });
 

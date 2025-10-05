@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
+import { API_URL } from '../config';
 import { Button } from '../components/ui/Button';
 import { Code, Trash2, LogOut, Plus, Clock, Users } from 'lucide-react';
 
@@ -42,10 +43,10 @@ function Profile() {
   const fetchPlaygrounds = async () => {
     try {
       const [playgroundsRes, roomsRes] = await Promise.all([
-        fetch('http://localhost:4000/api/playgrounds', {
+        fetch(`${API_URL}/api/playgrounds`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        fetch('http://localhost:4000/api/rooms', {
+        fetch(`${API_URL}/api/rooms`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -70,7 +71,7 @@ function Profile() {
     if (!confirm('Are you sure you want to delete this playground?')) return;
 
     try {
-      const response = await fetch(`http://localhost:4000/api/playgrounds/${id}`, {
+      const response = await fetch(`${API_URL}/api/playgrounds/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });

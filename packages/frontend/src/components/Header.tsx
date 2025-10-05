@@ -3,6 +3,7 @@ import { Play, Share2, Download, Settings, Sun, Moon, Monitor, User, Save } from
 import { usePlaygroundStore } from '../store/playgroundStore';
 import { useThemeStore } from '../store/themeStore';
 import { useAuthStore } from '../store/authStore';
+import { API_URL } from '../config';
 import ShareModal from './ShareModal';
 import DownloadModal from './DownloadModal';
 import SettingsModal from './SettingsModal';
@@ -31,7 +32,7 @@ export default function Header() {
 
     setIsSaving(true);
     try {
-      const response = await fetch('http://localhost:4000/api/playgrounds', {
+      const response = await fetch(`${API_URL}/api/playgrounds`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,7 +58,7 @@ export default function Header() {
     if (!currentShareId) return;
     setIsSyncing(true);
     try {
-      const response = await fetch('http://localhost:4000/api/share', {
+      const response = await fetch(`${API_URL}/api/share`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

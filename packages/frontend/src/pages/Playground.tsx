@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { usePlaygroundStore } from '../store/playgroundStore';
+import { API_URL } from '../config';
 import Header from '../components/Header';
 import Editor from '../components/Editor';
 import Preview from '../components/Preview';
@@ -34,7 +35,7 @@ function Playground() {
         const shareId = match[1];
         console.log('Loading shared project:', shareId);
         try {
-          const response = await fetch(`http://localhost:4000/api/share/${shareId}`);
+          const response = await fetch(`${API_URL}/api/share/${shareId}`);
           const data = await response.json();
           
           console.log('Loaded project data:', data);

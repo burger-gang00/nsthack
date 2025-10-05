@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X, Copy, Check, QrCode, Twitter, Linkedin, MessageCircle, Lock, Globe, Eye } from 'lucide-react';
 import { nanoid } from 'nanoid';
+import { API_URL } from '../config';
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -24,7 +25,7 @@ export default function ShareModal({ isOpen, onClose, projectData }: ShareModalP
   const saveProject = async () => {
     setIsSharing(true);
     try {
-      const response = await fetch('http://localhost:4000/api/share', {
+      const response = await fetch(`${API_URL}/api/share`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -53,7 +54,7 @@ export default function ShareModal({ isOpen, onClose, projectData }: ShareModalP
   const syncProject = async () => {
     setIsSharing(true);
     try {
-      const response = await fetch('http://localhost:4000/api/share', {
+      const response = await fetch(`${API_URL}/api/share`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
