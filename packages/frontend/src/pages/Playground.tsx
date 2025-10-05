@@ -76,15 +76,23 @@ function Playground() {
   // Mobile fullscreen preview mode
   if (showMobilePreview) {
     return (
-      <div className="h-screen flex flex-col bg-gray-900">
-        <div className="h-12 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-4">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded flex items-center justify-center">
-              <span className="text-white text-xs">▶</span>
+      <div className="h-screen flex flex-col bg-gradient-to-br from-slate-900 via-gray-900 to-slate-900">
+        <div className="h-14 glass-dark border-b border-white/10 flex items-center justify-between px-6">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-green-500 via-lime-500 to-green-400 rounded-lg flex items-center justify-center shadow-glow-green">
+              <span className="text-white text-sm font-bold">▶</span>
             </div>
-            <span className="text-white text-sm font-medium">Live Preview</span>
+            <div>
+              <span className="text-white text-lg font-bold">Live Preview</span>
+              <div className="text-xs text-gray-400">Mobile View</div>
+            </div>
           </div>
-          <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
+          <div className="flex items-center gap-2">
+            <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-lime-500 animate-pulse' : 'bg-red-500'} shadow-lg`} />
+            <span className={`text-xs font-medium ${isConnected ? 'text-lime-400' : 'text-red-400'}`}>
+              {isConnected ? 'Live' : 'Offline'}
+            </span>
+          </div>
         </div>
         <div className="flex-1 overflow-hidden">
           <Preview />
@@ -94,9 +102,12 @@ function Playground() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-gray-900">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-slate-900 via-gray-900 to-slate-900 relative overflow-hidden">
+      {/* Animated background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-green-600/5 via-lime-600/5 to-green-500/5 animate-pulse-slow"></div>
+      
       <Header />
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden relative z-10">
         <Sidebar />
         <div className="flex-1 flex">
           <Editor />
@@ -111,8 +122,11 @@ function Playground() {
       <FileLock />
       <Notifications />
       {!isConnected && (
-        <div className="fixed top-16 right-4 bg-yellow-500 text-black px-4 py-2 rounded shadow-lg z-50">
-          Connecting to server...
+        <div className="fixed top-20 right-6 glass bg-yellow-500/20 border border-yellow-500/50 text-yellow-200 px-6 py-3 rounded-xl shadow-2xl z-50 animate-pulse font-medium">
+          <div className="flex items-center gap-3">
+            <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+            Connecting to server...
+          </div>
         </div>
       )}
     </div>

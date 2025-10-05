@@ -87,28 +87,39 @@ export default function Header() {
 
   return (
     <>
-      <header className="h-14 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-4">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+      <header className="h-16 glass-dark border-b border-white/10 flex items-center justify-between px-6 relative overflow-hidden">
+        {/* Animated background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 via-lime-500/10 to-green-400/10 animate-pulse-slow"></div>
+        
+        <div className="flex items-center gap-4 relative z-10">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-green-500 via-lime-500 to-green-400 rounded-xl flex items-center justify-center shadow-glow-green animate-glow">
               <Play className="w-5 h-5 text-white" fill="white" />
             </div>
-            <h1 className="text-xl font-bold text-white">RN Playground</h1>
+            <div>
+              <h1 className="text-xl font-bold gradient-text-green">RN Playground</h1>
+              <div className="text-xs text-gray-400 font-medium">Real-time Collaboration</div>
+            </div>
           </div>
-          <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
+          <div className="flex items-center gap-2">
+            <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'} shadow-lg`} />
+            <span className={`text-xs font-medium ${isConnected ? 'text-green-400' : 'text-red-400'}`}>
+              {isConnected ? 'Connected' : 'Disconnected'}
+            </span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 relative z-10">
           <ScreenRecorder />
           
           {isAuthenticated && (
             <button
               onClick={savePlayground}
               disabled={isSaving}
-              className={`px-3 py-2 rounded-lg flex items-center gap-2 transition-colors ${
+              className={`px-4 py-2.5 rounded-xl flex items-center gap-2 font-medium transition-all duration-300 ${
                 isSaving 
-                  ? 'bg-green-600 text-white' 
-                  : 'bg-purple-600 hover:bg-purple-700 text-white'
+                  ? 'glass bg-green-500/20 text-green-400 shadow-glow-green animate-scale-in' 
+                  : 'glass bg-green-500/20 hover:bg-green-500/30 text-green-300 hover:text-green-200 hover:shadow-glow-green hover:scale-105'
               }`}
               title="Save to your account"
             >
@@ -121,10 +132,10 @@ export default function Header() {
             <button
               onClick={quickSync}
               disabled={isSyncing}
-              className={`px-3 py-2 rounded-lg flex items-center gap-2 transition-colors ${
+              className={`px-4 py-2.5 rounded-xl flex items-center gap-2 font-medium transition-all duration-300 ${
                 isSyncing 
-                  ? 'bg-green-600 text-white' 
-                  : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                  ? 'glass bg-green-500/20 text-green-400 shadow-glow animate-scale-in' 
+                  : 'glass bg-gray-500/20 hover:bg-gray-500/30 text-gray-300 hover:text-gray-200 hover:shadow-lg hover:scale-105'
               }`}
               title="Sync shared project"
             >
@@ -135,7 +146,7 @@ export default function Header() {
           
           <button
             onClick={() => setShowShare(true)}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors"
+            className="px-5 py-2.5 bg-gradient-to-r from-green-600 to-lime-600 hover:from-green-500 hover:to-lime-500 text-black rounded-xl flex items-center gap-2 font-medium transition-all duration-300 hover:scale-105 hover:shadow-glow-green shadow-lg"
             title="Share Project"
           >
             <Share2 className="w-4 h-4" />
@@ -144,7 +155,7 @@ export default function Header() {
 
           <button
             onClick={() => setShowDownload(true)}
-            className="p-2 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors"
+            className="p-3 glass hover:bg-white/10 text-gray-300 hover:text-white rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg"
             title="Download Project"
           >
             <Download className="w-5 h-5" />
@@ -153,51 +164,53 @@ export default function Header() {
           <div className="relative">
             <button
               onClick={() => setShowThemeMenu(!showThemeMenu)}
-              className="p-2 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors"
+              className="p-3 glass hover:bg-white/10 text-gray-300 hover:text-white rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg"
               title="Change Theme"
             >
               {getThemeIcon()}
             </button>
 
             {showThemeMenu && (
-              <div className="absolute right-0 top-full mt-2 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50 min-w-[150px]">
-                <button
-                  onClick={() => {
-                    setMode('light');
-                    setShowThemeMenu(false);
-                  }}
-                  className="w-full px-4 py-2 text-left hover:bg-gray-700 flex items-center gap-2 text-gray-300"
-                >
-                  <Sun className="w-4 h-4" />
-                  Light
-                </button>
-                <button
-                  onClick={() => {
-                    setMode('dark');
-                    setShowThemeMenu(false);
-                  }}
-                  className="w-full px-4 py-2 text-left hover:bg-gray-700 flex items-center gap-2 text-gray-300"
-                >
-                  <Moon className="w-4 h-4" />
-                  Dark
-                </button>
-                <button
-                  onClick={() => {
-                    setMode('auto');
-                    setShowThemeMenu(false);
-                  }}
-                  className="w-full px-4 py-2 text-left hover:bg-gray-700 flex items-center gap-2 text-gray-300"
-                >
-                  <Monitor className="w-4 h-4" />
-                  Auto
-                </button>
+              <div className="absolute right-0 top-full mt-3 glass rounded-xl shadow-2xl z-50 min-w-[160px] animate-scale-in">
+                <div className="p-2">
+                  <button
+                    onClick={() => {
+                      setMode('light');
+                      setShowThemeMenu(false);
+                    }}
+                    className="w-full px-4 py-3 text-left hover:bg-white/10 rounded-lg flex items-center gap-3 text-gray-300 hover:text-white transition-all duration-200"
+                  >
+                    <Sun className="w-4 h-4" />
+                    <span className="font-medium">Light</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setMode('dark');
+                      setShowThemeMenu(false);
+                    }}
+                    className="w-full px-4 py-3 text-left hover:bg-white/10 rounded-lg flex items-center gap-3 text-gray-300 hover:text-white transition-all duration-200"
+                  >
+                    <Moon className="w-4 h-4" />
+                    <span className="font-medium">Dark</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setMode('auto');
+                      setShowThemeMenu(false);
+                    }}
+                    className="w-full px-4 py-3 text-left hover:bg-white/10 rounded-lg flex items-center gap-3 text-gray-300 hover:text-white transition-all duration-200"
+                  >
+                    <Monitor className="w-4 h-4" />
+                    <span className="font-medium">Auto</span>
+                  </button>
+                </div>
               </div>
             )}
           </div>
 
           <button
             onClick={() => setShowSettings(true)}
-            className="p-2 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors"
+            className="p-3 glass hover:bg-white/10 text-gray-300 hover:text-white rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg"
             title="Settings"
           >
             <Settings className="w-5 h-5" />
@@ -206,7 +219,7 @@ export default function Header() {
           {isAuthenticated ? (
             <a
               href="/profile"
-              className="p-2 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors flex items-center gap-2"
+              className="p-3 glass hover:bg-white/10 text-gray-300 hover:text-white rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg flex items-center gap-2"
               title={`Profile - ${user?.name}`}
             >
               <User className="w-5 h-5" />
@@ -214,7 +227,7 @@ export default function Header() {
           ) : (
             <a
               href="/signin"
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+              className="px-5 py-2.5 bg-gradient-to-r from-green-600 to-lime-600 hover:from-green-500 hover:to-lime-500 text-black rounded-xl font-medium transition-all duration-300 hover:scale-105 hover:shadow-glow-green shadow-lg"
             >
               Sign In
             </a>

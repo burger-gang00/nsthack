@@ -49,34 +49,37 @@ function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
       {/* Header */}
-      <header className="relative z-10 bg-gray-900/50 backdrop-blur-sm border-b border-gray-800">
+      <header className="relative z-10 glass-dark border-b border-white/10 animate-slide-in-left">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded flex items-center justify-center">
-                <span className="text-white text-sm font-bold">RN</span>
+          <div className="flex items-center justify-between h-20">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-green-500 via-lime-500 to-green-400 rounded-xl flex items-center justify-center shadow-glow-green animate-glow">
+                <span className="text-white text-lg font-bold">RN</span>
               </div>
-              <span className="text-white text-xl font-semibold">RN Live</span>
+              <div>
+                <span className="text-white text-2xl font-bold gradient-text-green">RN Live</span>
+                <div className="text-xs text-gray-400 font-medium">Next-Gen Playground</div>
+              </div>
             </div>
             <nav className="hidden md:flex items-center gap-8">
-              <a href="#features" className="text-gray-300 hover:text-white transition-colors">
+              <a href="#features" className="text-gray-300 hover:text-white transition-all duration-300 font-medium hover:scale-105">
                 Features
               </a>
-              <a href="#testimonials" className="text-gray-300 hover:text-white transition-colors">
+              <a href="#testimonials" className="text-gray-300 hover:text-white transition-all duration-300 font-medium hover:scale-105">
                 Testimonials
               </a>
-              <a href="#pricing" className="text-gray-300 hover:text-white transition-colors">
+              <a href="#pricing" className="text-gray-300 hover:text-white transition-all duration-300 font-medium hover:scale-105">
                 Pricing
               </a>
             </nav>
             <div className="flex items-center gap-4">
               <a href="/signin">
-                <Button variant="ghost" className="text-white hover:bg-white/10">
+                <Button variant="ghost" className="text-white hover:bg-white/10 glass px-6 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-105">
                   Sign In
                 </Button>
               </a>
               <a href="/signup">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button className="bg-gradient-to-r from-green-600 to-lime-600 hover:from-green-500 hover:to-lime-500 text-black px-6 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-glow-green">
                   Get Started
                 </Button>
               </a>
@@ -86,43 +89,70 @@ function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden py-20 lg:py-32">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 blur-3xl" />
+      <section className="relative overflow-hidden py-24 lg:py-40">
+        {/* Animated background elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-gradient-to-r from-green-600/30 to-lime-600/30 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-r from-lime-600/20 to-green-600/20 rounded-full blur-3xl animate-float" style={{animationDelay: '1s'}}></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-green-600/10 to-lime-600/10 rounded-full blur-3xl animate-pulse-slow"></div>
+        </div>
+        
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6">
-            Code Together in
-            <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              {' '}Real-Time
-            </span>
-          </h1>
-          <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-            Collaborate seamlessly with voice, video, and live code editing. Build amazing projects together with RN Live.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="animate-fade-in-up">
+            <h1 className="text-5xl lg:text-7xl font-black text-white mb-8 leading-tight">
+              Code Together in
+              <br />
+              <span className="gradient-text-green animate-glow">
+                Real-Time
+              </span>
+            </h1>
+            <p className="text-xl lg:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed">
+              Collaborate seamlessly with voice, video, and live code editing. Build amazing projects together with the most advanced React Native playground.
+            </p>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-6 justify-center animate-fade-in-up" style={{animationDelay: '0.3s'}}>
             <a href="/playground">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg">
+              <Button size="lg" className="bg-gradient-to-r from-green-600 via-lime-600 to-green-500 hover:from-green-500 hover:via-lime-500 hover:to-green-400 text-black px-10 py-5 text-xl font-bold rounded-2xl shadow-glow-green interactive">
                 Start Coding Now
-                <ArrowRight className="w-5 h-5 ml-2" />
+                <ArrowRight className="w-6 h-6 ml-3" />
               </Button>
             </a>
             <a href="https://github.com/your-repo" target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" size="lg" className="border-gray-600 text-white hover:bg-white/10 px-8 py-4 text-lg">
-                <Github className="w-5 h-5 mr-2" />
+              <Button variant="outline" size="lg" className="glass border-white/20 text-white hover:bg-white/10 px-10 py-5 text-xl font-bold rounded-2xl interactive">
+                <Github className="w-6 h-6 mr-3" />
                 View on GitHub
               </Button>
             </a>
+          </div>
+          
+          {/* Stats */}
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto animate-fade-in-up" style={{animationDelay: '0.6s'}}>
+            <div className="text-center">
+              <div className="text-3xl font-bold gradient-text-green mb-2">10k+</div>
+              <div className="text-gray-400">Active Developers</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold gradient-text-green mb-2">50k+</div>
+              <div className="text-gray-400">Projects Created</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold gradient-text-green mb-2">99.9%</div>
+              <div className="text-gray-400">Uptime</div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-gray-900/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-5xl font-bold text-white mb-4">
+      <section id="features" className="py-24 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/50 via-blue-900/10 to-gray-900/50"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl lg:text-6xl font-black text-white mb-6 gradient-text-blue">
               Collaborate Like Never Before
             </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl lg:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
               Experience seamless real-time collaboration with voice calls, video chat, live code editing, and instant previews.
             </p>
           </div>
@@ -130,13 +160,24 @@ function Home() {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="bg-gray-800/50 backdrop-blur-sm rounded-lg p-6 border border-gray-700 hover:border-blue-500/50 transition-colors"
+                className="glass card-hover p-8 rounded-2xl border border-white/10 shadow-2xl interactive group relative overflow-hidden"
+                style={{animationDelay: `${index * 0.1}s`}}
               >
-                <div className="bg-blue-600/20 w-12 h-12 rounded-lg flex items-center justify-center mb-4 text-blue-400">
-                  {feature.icon}
+                {/* Gradient background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-green-600/5 via-lime-600/5 to-green-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                <div className="relative z-10">
+                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 ${
+                    index === 0 ? 'bg-gradient-to-br from-green-500/20 to-lime-500/20 text-green-400' :
+                    index === 1 ? 'bg-gradient-to-br from-lime-500/20 to-green-500/20 text-lime-400' :
+                    index === 2 ? 'bg-gradient-to-br from-emerald-500/20 to-green-500/20 text-emerald-400' :
+                    'bg-gradient-to-br from-orange-500/20 to-red-500/20 text-orange-400'
+                  } shadow-glow group-hover:scale-110 transition-transform duration-300`}>
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-3 group-hover:gradient-text-green transition-all duration-300">{feature.title}</h3>
+                  <p className="text-gray-300 leading-relaxed">{feature.description}</p>
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
-                <p className="text-gray-300">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -194,15 +235,15 @@ function Home() {
               </div>
               <ul className="space-y-3 mb-8">
                 <li className="text-gray-300 flex items-center">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                  <span className="w-2 h-2 bg-lime-500 rounded-full mr-3"></span>
                   Up to 3 collaborators
                 </li>
                 <li className="text-gray-300 flex items-center">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                  <span className="w-2 h-2 bg-lime-500 rounded-full mr-3"></span>
                   Basic voice calls
                 </li>
                 <li className="text-gray-300 flex items-center">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                  <span className="w-2 h-2 bg-lime-500 rounded-full mr-3"></span>
                   Public projects
                 </li>
               </ul>
@@ -212,9 +253,9 @@ function Home() {
             </div>
 
             {/* Pro Plan */}
-            <div className="bg-gradient-to-b from-blue-600/20 to-purple-600/20 rounded-lg p-8 border border-blue-500/50 relative">
+            <div className="bg-gradient-to-b from-green-600/20 to-lime-600/20 rounded-lg p-8 border border-green-500/50 relative">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                <span className="bg-gradient-to-r from-green-500 to-lime-500 text-black px-4 py-1 rounded-full text-sm font-semibold">
                   Most Popular
                 </span>
               </div>
@@ -226,19 +267,19 @@ function Home() {
               </div>
               <ul className="space-y-3 mb-8">
                 <li className="text-gray-300 flex items-center">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                  <span className="w-2 h-2 bg-lime-500 rounded-full mr-3"></span>
                   Unlimited collaborators
                 </li>
                 <li className="text-gray-300 flex items-center">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                  <span className="w-2 h-2 bg-lime-500 rounded-full mr-3"></span>
                   HD video calls
                 </li>
                 <li className="text-gray-300 flex items-center">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                  <span className="w-2 h-2 bg-lime-500 rounded-full mr-3"></span>
                   Private projects
                 </li>
                 <li className="text-gray-300 flex items-center">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                  <span className="w-2 h-2 bg-lime-500 rounded-full mr-3"></span>
                   Advanced AI features
                 </li>
               </ul>
@@ -256,19 +297,19 @@ function Home() {
               </div>
               <ul className="space-y-3 mb-8">
                 <li className="text-gray-300 flex items-center">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                  <span className="w-2 h-2 bg-lime-500 rounded-full mr-3"></span>
                   Everything in Pro
                 </li>
                 <li className="text-gray-300 flex items-center">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                  <span className="w-2 h-2 bg-lime-500 rounded-full mr-3"></span>
                   SSO & SAML
                 </li>
                 <li className="text-gray-300 flex items-center">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                  <span className="w-2 h-2 bg-lime-500 rounded-full mr-3"></span>
                   Dedicated support
                 </li>
                 <li className="text-gray-300 flex items-center">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                  <span className="w-2 h-2 bg-lime-500 rounded-full mr-3"></span>
                   Custom integrations
                 </li>
               </ul>
@@ -304,7 +345,7 @@ function Home() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-lime-600 rounded flex items-center justify-center">
                   <span className="text-white text-sm font-bold">RN</span>
                 </div>
                 <span className="text-white text-xl font-semibold">RN Live</span>
