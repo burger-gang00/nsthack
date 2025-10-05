@@ -47,53 +47,53 @@ export default function Console() {
     switch (type) {
       case 'error': return 'text-red-400';
       case 'warn': return 'text-yellow-400';
-      case 'info': return 'text-blue-400';
+      case 'info': return 'text-lime-400';
       default: return 'text-gray-300';
     }
   };
 
   return (
-    <div className={`bg-gray-800 border-t border-gray-700 flex flex-col transition-all ${
-      isExpanded ? 'h-64' : 'h-10'
+    <div className={`bg-slate-800/95 backdrop-blur-xl border-t border-slate-700/50 flex flex-col transition-all duration-300 ${
+      isExpanded ? 'h-64' : 'h-12'
     }`}>
-      <div className="h-10 flex items-center justify-between px-4 border-b border-gray-700">
+      <div className="h-12 flex items-center justify-between px-6 border-b border-slate-700/30">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Terminal className="w-4 h-4 text-gray-400" />
+          <div className="flex items-center gap-3">
+            <Terminal className="w-4 h-4 text-slate-400" />
             <button
               onClick={() => setActiveTab('console')}
-              className={`text-sm transition-colors ${
-                activeTab === 'console' ? 'text-white' : 'text-gray-400 hover:text-gray-300'
+              className={`text-sm font-medium transition-all duration-200 ${
+                activeTab === 'console' ? 'text-white bg-slate-700/50 px-3 py-1.5 rounded-lg' : 'text-slate-400 hover:text-slate-300 px-3 py-1.5'
               }`}
             >
               Console
             </button>
             <button
               onClick={() => setActiveTab('terminal')}
-              className={`text-sm transition-colors ${
-                activeTab === 'terminal' ? 'text-white' : 'text-gray-400 hover:text-gray-300'
+              className={`text-sm font-medium transition-all duration-200 ${
+                activeTab === 'terminal' ? 'text-white bg-slate-700/50 px-3 py-1.5 rounded-lg' : 'text-slate-400 hover:text-slate-300 px-3 py-1.5'
               }`}
             >
               Terminal
             </button>
           </div>
           {activeTab === 'console' && logs.length > 0 && (
-            <span className="text-xs bg-gray-700 text-gray-300 px-2 py-0.5 rounded">
+            <span className="text-xs bg-lime-500/20 text-lime-400 px-2 py-1 rounded-md font-medium">
               {logs.length}
             </span>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => activeTab === 'console' ? clearLogs() : setTerminalHistory([])}
-            className="p-1 hover:bg-gray-700 text-gray-400 rounded transition-colors"
+            className="p-2 hover:bg-slate-700/50 text-slate-400 hover:text-slate-300 rounded-lg transition-all duration-200"
             title="Clear"
           >
             <Trash2 className="w-4 h-4" />
           </button>
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1 hover:bg-gray-700 text-gray-400 rounded transition-colors"
+            className="p-2 hover:bg-slate-700/50 text-slate-400 hover:text-slate-300 rounded-lg transition-all duration-200"
           >
             {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
           </button>
@@ -108,7 +108,7 @@ export default function Console() {
                 <div className="text-gray-500 text-center py-8">No console output</div>
               ) : (
                 logs.map((log) => (
-                  <div key={log.id} className="py-1 px-2 hover:bg-gray-700/50 rounded">
+                  <div key={log.id} className="py-2 px-3 hover:bg-slate-700/50 rounded-lg transition-colors duration-200">
                     <span className={getLogColor(log.type)}>[{log.type}]</span>{' '}
                     <span className="text-gray-300">{log.message}</span>
                   </div>
@@ -139,8 +139,8 @@ export default function Console() {
                 )}
                 <div ref={terminalEndRef} />
               </div>
-              <div className="border-t border-gray-700 p-2 flex items-center gap-2 font-mono text-sm">
-                <span className="text-blue-400">{currentDir}</span>
+              <div className="border-t border-slate-700/50 p-3 flex items-center gap-2 font-mono text-sm">
+                <span className="text-lime-400">{currentDir}</span>
                 <span className="text-green-400">$</span>
                 <input
                   ref={inputRef}

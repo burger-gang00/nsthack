@@ -22,35 +22,35 @@ export default function Editor() {
   }, [activeTab?.content]);
 
   return (
-    <div className="flex-1 flex flex-col glass-dark border-r border-white/10 relative overflow-hidden">
-      {/* Animated background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 via-lime-500/5 to-green-400/5 animate-pulse-slow"></div>
+    <div className="flex-1 flex flex-col bg-slate-800/50 border-r border-slate-700/50 relative overflow-hidden">
+      {/* Subtle background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900"></div>
       
       {/* Tabs */}
-      <div className="flex glass-dark border-b border-white/10 overflow-x-auto relative z-10">
+      <div className="flex bg-slate-800/80 backdrop-blur-sm border-b border-slate-700/30 overflow-x-auto relative z-10">
         {openTabs.map((tab, index) => (
           <div
             key={tab.id}
-            className={`flex items-center gap-3 px-5 py-3 border-r border-white/5 cursor-pointer group min-w-[140px] relative transition-all duration-300 ${
+            className={`flex items-center gap-3 px-4 py-3 border-r border-slate-700/30 cursor-pointer group min-w-[140px] relative transition-all duration-200 ${
               tab.id === activeTabId
-                ? 'glass bg-gradient-to-b from-green-500/20 to-transparent text-white shadow-lg'
-                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                ? 'bg-slate-700/60 text-white border-b-2 border-lime-400'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/30'
             }`}
             onClick={() => setActiveTab(tab.id)}
           >
             {/* File type indicator */}
-            <div className={`w-2 h-2 rounded-full ${
+            <div className={`w-2 h-2 rounded-full transition-colors ${
               tab.language === 'typescript' || tab.language === 'javascript' 
-                ? 'bg-green-400' 
+                ? 'bg-lime-400' 
                 : tab.language === 'json' 
-                  ? 'bg-lime-500'
-                  : 'bg-green-500'
+                  ? 'bg-green-400'
+                  : 'bg-emerald-400'
             }`} />
             
             <span className="text-sm font-medium truncate flex-1">{tab.name}</span>
             
             {tab.isDirty && (
-              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-glow-green" />
+              <span className="w-1.5 h-1.5 bg-lime-400 rounded-full animate-pulse" />
             )}
             
             <button
@@ -62,11 +62,7 @@ export default function Editor() {
             >
               <X className="w-3 h-3" />
             </button>
-            
-            {/* Active tab indicator */}
-            {tab.id === activeTabId && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-green-500 to-lime-500 rounded-full"></div>
-            )}
+
           </div>
         ))}
       </div>
@@ -112,7 +108,7 @@ export default function Editor() {
           }}
           theme="vs-dark"
           options={{
-            minimap: { enabled: true },
+            minimap: { enabled: false },
             fontSize: 14,
             lineNumbers: 'on',
             scrollBeyondLastLine: false,
@@ -125,7 +121,11 @@ export default function Editor() {
             quickSuggestions: true,
             folding: true,
             foldingStrategy: 'indentation',
-            showFoldingControls: 'always',
+            showFoldingControls: 'mouseover',
+            fontFamily: 'JetBrains Mono, Menlo, Monaco, Consolas, monospace',
+            fontLigatures: true,
+            cursorBlinking: 'smooth',
+            renderWhitespace: 'boundary',
           }}
         />
       ) : (

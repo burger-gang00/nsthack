@@ -87,9 +87,9 @@ export default function Header() {
 
   return (
     <>
-      <header className="h-16 glass-dark border-b border-white/10 flex items-center justify-between px-6 relative overflow-hidden">
-        {/* Animated background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 via-lime-500/10 to-green-400/10 animate-pulse-slow"></div>
+      <header className="h-16 bg-slate-800/95 backdrop-blur-xl border-b border-slate-700/50 flex items-center justify-between px-6 relative overflow-hidden">
+        {/* Subtle animated background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-r from-lime-500/5 via-green-500/5 to-emerald-500/5 animate-pulse-slow"></div>
         
         <div className="flex items-center gap-4 relative z-10">
           <div className="flex items-center gap-3">
@@ -102,8 +102,8 @@ export default function Header() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'} shadow-lg`} />
-            <span className={`text-xs font-medium ${isConnected ? 'text-green-400' : 'text-red-400'}`}>
+            <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-lime-400 animate-pulse' : 'bg-red-500'} shadow-lg`} />
+            <span className={`text-xs font-medium ${isConnected ? 'text-lime-400' : 'text-red-400'}`}>
               {isConnected ? 'Connected' : 'Disconnected'}
             </span>
           </div>
@@ -118,8 +118,8 @@ export default function Header() {
               disabled={isSaving}
               className={`px-4 py-2.5 rounded-xl flex items-center gap-2 font-medium transition-all duration-300 ${
                 isSaving 
-                  ? 'glass bg-green-500/20 text-green-400 shadow-glow-green animate-scale-in' 
-                  : 'glass bg-green-500/20 hover:bg-green-500/30 text-green-300 hover:text-green-200 hover:shadow-glow-green hover:scale-105'
+                  ? 'bg-lime-500/20 text-lime-400 shadow-lg shadow-lime-500/20 animate-pulse' 
+                  : 'bg-slate-700/50 hover:bg-lime-500/20 text-slate-300 hover:text-lime-400 hover:shadow-lg hover:shadow-lime-500/10 hover:scale-105'
               }`}
               title="Save to your account"
             >
@@ -134,8 +134,8 @@ export default function Header() {
               disabled={isSyncing}
               className={`px-4 py-2.5 rounded-xl flex items-center gap-2 font-medium transition-all duration-300 ${
                 isSyncing 
-                  ? 'glass bg-green-500/20 text-green-400 shadow-glow animate-scale-in' 
-                  : 'glass bg-gray-500/20 hover:bg-gray-500/30 text-gray-300 hover:text-gray-200 hover:shadow-lg hover:scale-105'
+                  ? 'bg-green-500/20 text-green-400 shadow-lg shadow-green-500/20 animate-pulse' 
+                  : 'bg-slate-700/50 hover:bg-green-500/20 text-slate-300 hover:text-green-400 hover:shadow-lg hover:shadow-green-500/10 hover:scale-105'
               }`}
               title="Sync shared project"
             >
@@ -155,7 +155,7 @@ export default function Header() {
 
           <button
             onClick={() => setShowDownload(true)}
-            className="p-3 glass hover:bg-white/10 text-gray-300 hover:text-white rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg"
+            className="p-3 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 hover:text-slate-100 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg"
             title="Download Project"
           >
             <Download className="w-5 h-5" />

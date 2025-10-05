@@ -286,8 +286,8 @@ export const usePlaygroundStore = create<PlaygroundState>((set, get) => ({
 
   // Preview
   socket: null,
-  previewMode: 'web',
-  deviceFrame: 'iPhone 15 Pro',
+  previewMode: 'ios',
+  deviceFrame: 'iphone-15-pro',
 
   // File operations
   createFile: (name, parentId = 'root') => {

@@ -231,9 +231,9 @@ export default function AIChat() {
     return (
       <button
         onClick={() => setIsMinimized(false)}
-        className="fixed bottom-4 right-4 w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform z-50"
+        className="fixed bottom-4 right-4 w-14 h-14 bg-gradient-to-r from-lime-500 to-green-500 rounded-full shadow-lg shadow-lime-500/20 flex items-center justify-center hover:scale-110 transition-all duration-300 z-50 animate-pulse"
       >
-        <Bot className="w-6 h-6 text-white" />
+        <Bot className="w-6 h-6 text-black" />
       </button>
     );
   }
@@ -242,10 +242,10 @@ export default function AIChat() {
     <div
       className={`fixed ${
         isExpanded ? 'inset-4' : 'bottom-4 right-4 w-96 h-[600px]'
-      } bg-gray-800 border border-gray-700 rounded-lg shadow-2xl flex flex-col z-50 transition-all`}
+      } bg-slate-800/95 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl shadow-lime-500/10 flex flex-col z-50 transition-all duration-300`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-700 bg-gradient-to-r from-blue-600 to-purple-600">
+      <div className="flex items-center justify-between p-4 border-b border-slate-700/50 bg-gradient-to-r from-lime-500/20 to-green-500/20 rounded-t-2xl">
         <div className="flex items-center gap-2">
           <Bot className="w-5 h-5 text-white" />
           <h3 className="font-semibold text-white">AI Assistant</h3>
@@ -268,11 +268,11 @@ export default function AIChat() {
       </div>
 
       {/* Quick Actions */}
-      <div className="p-2 border-b border-gray-700 bg-gray-900">
-        <div className="flex flex-wrap gap-1">
+      <div className="p-3 border-b border-slate-700/50 bg-slate-800/80">
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={() => quickAction('explain', 'Explain this code')}
-            className="px-2 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded flex items-center gap-1 transition-colors"
+            className="px-3 py-1.5 text-xs bg-lime-500/20 hover:bg-lime-500/30 text-lime-400 rounded-lg flex items-center gap-1.5 transition-all duration-200 font-medium"
             disabled={isLoading}
           >
             <Code className="w-3 h-3" />
@@ -280,7 +280,7 @@ export default function AIChat() {
           </button>
           <button
             onClick={() => quickAction('debug', 'Debug this code')}
-            className="px-2 py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded flex items-center gap-1 transition-colors"
+            className="px-3 py-1.5 text-xs bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg flex items-center gap-1.5 transition-all duration-200 font-medium"
             disabled={isLoading}
           >
             <Bug className="w-3 h-3" />
@@ -288,7 +288,7 @@ export default function AIChat() {
           </button>
           <button
             onClick={() => quickAction('improve', 'Improve this code')}
-            className="px-2 py-1 text-xs bg-green-600 hover:bg-green-700 text-white rounded flex items-center gap-1 transition-colors"
+            className="px-3 py-1.5 text-xs bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded-lg flex items-center gap-1.5 transition-all duration-200 font-medium"
             disabled={isLoading}
           >
             <Lightbulb className="w-3 h-3" />
@@ -296,7 +296,7 @@ export default function AIChat() {
           </button>
           <button
             onClick={() => quickAction('test', 'Generate tests')}
-            className="px-2 py-1 text-xs bg-purple-600 hover:bg-purple-700 text-white rounded flex items-center gap-1 transition-colors"
+            className="px-3 py-1.5 text-xs bg-violet-500/20 hover:bg-violet-500/30 text-violet-400 rounded-lg flex items-center gap-1.5 transition-all duration-200 font-medium"
             disabled={isLoading}
           >
             <TestTube className="w-3 h-3" />
@@ -304,7 +304,7 @@ export default function AIChat() {
           </button>
           <button
             onClick={() => quickAction('refactor', 'Suggest refactoring')}
-            className="px-2 py-1 text-xs bg-orange-600 hover:bg-orange-700 text-white rounded flex items-center gap-1 transition-colors"
+            className="px-3 py-1.5 text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-lg flex items-center gap-1.5 transition-all duration-200 font-medium"
             disabled={isLoading}
           >
             <RefreshCw className="w-3 h-3" />

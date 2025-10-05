@@ -102,14 +102,17 @@ function Playground() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-slate-900 via-gray-900 to-slate-900 relative overflow-hidden">
-      {/* Animated background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-green-600/5 via-lime-600/5 to-green-500/5 animate-pulse-slow"></div>
+    <div className="h-screen flex flex-col bg-slate-900 relative overflow-hidden">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(34,197,94,0.05),transparent_50%)] animate-pulse-slow"></div>
+      </div>
       
       <Header />
       <div className="flex-1 flex overflow-hidden relative z-10">
         <Sidebar />
-        <div className="flex-1 flex">
+        <div className="flex-1 flex border-t border-slate-700/30">
           <Editor />
           <Preview />
         </div>
@@ -122,10 +125,10 @@ function Playground() {
       <FileLock />
       <Notifications />
       {!isConnected && (
-        <div className="fixed top-20 right-6 glass bg-yellow-500/20 border border-yellow-500/50 text-yellow-200 px-6 py-3 rounded-xl shadow-2xl z-50 animate-pulse font-medium">
+        <div className="fixed top-20 right-6 bg-slate-800/95 backdrop-blur-lg border border-amber-500/30 text-amber-200 px-5 py-3 rounded-xl shadow-2xl z-50 animate-pulse font-medium">
           <div className="flex items-center gap-3">
-            <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
-            Connecting to server...
+            <div className="w-3 h-3 bg-amber-400 rounded-full animate-pulse"></div>
+            <span className="text-sm">Connecting to server...</span>
           </div>
         </div>
       )}

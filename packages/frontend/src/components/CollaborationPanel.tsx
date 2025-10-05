@@ -128,8 +128,8 @@ export default function CollaborationPanel() {
 
   return (
     <>
-    <div className="fixed bottom-4 right-4 w-96 h-[500px] bg-gray-800 border border-gray-700 rounded-lg shadow-2xl flex flex-col z-40">
-      <div className="flex items-center justify-between p-4 border-b border-gray-700 bg-gradient-to-r from-green-600 to-teal-600">
+    <div className="fixed bottom-4 right-4 w-96 h-[500px] bg-slate-800/95 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl shadow-lime-500/10 flex flex-col z-40">
+      <div className="flex items-center justify-between p-4 border-b border-slate-700/50 bg-gradient-to-r from-lime-500/20 to-green-500/20 rounded-t-2xl">
         <div className="flex items-center gap-2">
           <Users className="w-5 h-5 text-white" />
           <h3 className="font-semibold text-white">Collaboration</h3>
@@ -152,7 +152,7 @@ export default function CollaborationPanel() {
             </p>
             <button
               onClick={handleJoinRoom}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center gap-2 mx-auto transition-colors"
+              className="px-6 py-3 bg-gradient-to-r from-lime-500 to-green-500 hover:from-lime-400 hover:to-green-400 text-black rounded-xl flex items-center gap-2 mx-auto transition-all duration-200 font-medium shadow-lg hover:scale-105"
             >
               <UserPlus className="w-4 h-4" />
               Join Room
@@ -161,13 +161,13 @@ export default function CollaborationPanel() {
         </div>
       ) : (
         <>
-          <div className="flex border-b border-gray-700">
+          <div className="flex border-b border-slate-700/50">
             <button
               onClick={() => setActiveTab('users')}
-              className={`flex-1 px-4 py-2 text-sm font-medium transition-colors ${
+              className={`flex-1 px-4 py-3 text-sm font-medium transition-all duration-200 ${
                 activeTab === 'users'
-                  ? 'bg-gray-900 text-green-400 border-b-2 border-green-400'
-                  : 'text-gray-400 hover:text-gray-300'
+                  ? 'bg-slate-700/60 text-lime-400 border-b-2 border-lime-400'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/30'
               }`}
             >
               <Users className="w-4 h-4 inline mr-2" />

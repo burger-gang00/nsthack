@@ -31,70 +31,59 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="w-72 glass-dark border-r border-white/10 flex flex-col relative overflow-hidden">
-      {/* Animated background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-green-500/5 via-lime-500/5 to-green-400/5 animate-pulse-slow"></div>
+    <div className="w-72 bg-slate-800/95 backdrop-blur-xl border-r border-slate-700/50 flex flex-col relative overflow-hidden">
+      {/* Subtle background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-800 via-slate-800 to-slate-900"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-lime-500/3 via-transparent to-green-500/3 animate-pulse-slow"></div>
       
       <div className="flex border-b border-white/10 relative z-10">
         <button
           onClick={() => setActiveTab('files')}
-          className={`flex-1 p-4 flex flex-col items-center justify-center gap-2 transition-all duration-300 relative ${
+          className={`flex-1 p-4 flex flex-col items-center justify-center gap-2 transition-all duration-200 relative ${
             activeTab === 'files' 
-              ? 'text-green-400 bg-gradient-to-b from-green-500/20 to-transparent' 
-              : 'text-gray-400 hover:text-white hover:bg-white/5'
+              ? 'text-lime-400 bg-lime-500/10 border-b-2 border-lime-400' 
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/30'
           }`}
           title="Files"
         >
           <FileCode className="w-5 h-5" />
-          <span className="text-xs font-medium">Files</span>
-          {activeTab === 'files' && (
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-gradient-to-r from-green-500 to-lime-500 rounded-full"></div>
-          )}
+          <span className="text-xs font-semibold">Files</span>
         </button>
         <button
           onClick={() => setActiveTab('packages')}
-          className={`flex-1 p-4 flex flex-col items-center justify-center gap-2 transition-all duration-300 relative ${
+          className={`flex-1 p-4 flex flex-col items-center justify-center gap-2 transition-all duration-200 relative ${
             activeTab === 'packages' 
-              ? 'text-green-400 bg-gradient-to-b from-green-500/20 to-transparent' 
-              : 'text-gray-400 hover:text-white hover:bg-white/5'
+              ? 'text-lime-400 bg-lime-500/10 border-b-2 border-lime-400' 
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/30'
           }`}
           title="Packages"
         >
           <Package className="w-5 h-5" />
-          <span className="text-xs font-medium">Packages</span>
-          {activeTab === 'packages' && (
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-gradient-to-r from-green-500 to-lime-500 rounded-full"></div>
-          )}
+          <span className="text-xs font-semibold">Packages</span>
         </button>
         <button
           onClick={() => setActiveTab('templates')}
-          className={`flex-1 p-4 flex flex-col items-center justify-center gap-2 transition-all duration-300 relative ${
+          className={`flex-1 p-4 flex flex-col items-center justify-center gap-2 transition-all duration-200 relative ${
             activeTab === 'templates' 
-              ? 'text-green-400 bg-gradient-to-b from-green-500/20 to-transparent' 
-              : 'text-gray-400 hover:text-white hover:bg-white/5'
+              ? 'text-lime-400 bg-lime-500/10 border-b-2 border-lime-400' 
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/30'
           }`}
           title="Templates"
         >
           <Layers className="w-5 h-5" />
-          <span className="text-xs font-medium">Templates</span>
-          {activeTab === 'templates' && (
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-gradient-to-r from-green-500 to-lime-500 rounded-full"></div>
-          )}
+          <span className="text-xs font-semibold">Templates</span>
         </button>
         <button
           onClick={() => setActiveTab('examples')}
-          className={`flex-1 p-4 flex flex-col items-center justify-center gap-2 transition-all duration-300 relative ${
+          className={`flex-1 p-4 flex flex-col items-center justify-center gap-2 transition-all duration-200 relative ${
             activeTab === 'examples' 
-              ? 'text-green-400 bg-gradient-to-b from-green-500/20 to-transparent' 
-              : 'text-gray-400 hover:text-white hover:bg-white/5'
+              ? 'text-lime-400 bg-lime-500/10 border-b-2 border-lime-400' 
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/30'
           }`}
           title="Examples"
         >
           <BookOpen className="w-5 h-5" />
-          <span className="text-xs font-medium">Examples</span>
-          {activeTab === 'examples' && (
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-gradient-to-r from-green-500 to-lime-500 rounded-full"></div>
-          )}
+          <span className="text-xs font-semibold">Examples</span>
         </button>
       </div>
 
