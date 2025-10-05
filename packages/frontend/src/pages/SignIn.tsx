@@ -94,16 +94,16 @@ function SignIn() {
 
                         <button
               type="submit"
-              className="w-full bg-gradient-to-r from-green-600 to-lime-600 hover:from-green-500 hover:to-lime-500 text-black py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-[1.02] shadow-glow-green interactive"
+              className="w-full bg-gradient-to-r from-green-600 to-lime-600 hover:from-green-500 hover:to-lime-500 text-black py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-[1.02] shadow-glow-green interactive flex items-center justify-center gap-3"
             >
               {loading ? (
-                <div className="flex items-center justify-center gap-3">
+                <>
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                   Signing in...
-                </div>
+                </>
               ) : (
                 <>
-                  <LogIn className="w-5 h-5 mr-3" />
+                  <LogIn className="w-5 h-5" />
                   Sign In to Continue
                 </>
               )}

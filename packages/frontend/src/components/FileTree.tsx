@@ -55,7 +55,7 @@ function FileTreeItem({ node, level }: FileTreeItemProps) {
     <div>
       <div
         className={`flex items-center gap-1 px-2 py-1.5 cursor-pointer hover:bg-gray-700 group relative ${
-          isActive ? 'bg-blue-600/20 text-blue-400' : 'text-gray-300'
+          isActive ? 'bg-lime-500/20 text-lime-400' : 'text-gray-300'
         }`}
         style={{ paddingLeft: `${level * 12 + 8}px` }}
       >

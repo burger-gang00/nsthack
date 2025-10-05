@@ -131,6 +131,16 @@ code {
   background: rgba(255, 255, 255, 0.3);
 }
 
+/* Hide scrollbars */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
 /* Selection styling */
 ::selection {
   background: rgba(0, 255, 0, 0.3);

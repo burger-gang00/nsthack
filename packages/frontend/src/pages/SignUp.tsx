@@ -130,12 +130,15 @@ function SignUp() {
               className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3"
             >
               {loading ? (
-                'Creating account...'
+                <span className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  Creating account...
+                </span>
               ) : (
-                <>
-                  <UserPlus className="w-5 h-5 mr-2" />
+                <span className="flex items-center gap-2">
+                  <UserPlus className="w-5 h-5" />
                   Sign Up
-                </>
+                </span>
               )}
             </Button>
           </form>

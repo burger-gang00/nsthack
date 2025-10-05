@@ -73,17 +73,17 @@ export default function Preview() {
         </div>
         <DeviceSelector />
       </div>
-      <div className="flex-1 flex items-center justify-center p-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="flex-1 flex items-center justify-center p-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-auto scrollbar-hide">
         {previewMode === 'web' ? (
           // PC Monitor Frame - Realistic Computer Monitor
-          <div className="relative flex flex-col items-center">
+          <div className="relative flex flex-col items-center w-full h-full">
             
             {/* Monitor Frame */}
-            <div className="bg-gradient-to-b from-slate-800 via-slate-900 to-black rounded-3xl p-6 shadow-2xl shadow-black/60 border border-slate-700/50 relative" 
-                 style={{ width: '85%', height: '600px', maxWidth: '900px' }}>
+            <div className="bg-gradient-to-b from-slate-800 via-slate-900 to-black rounded-3xl p-6 shadow-2xl shadow-black/60 border border-slate-700/50 relative w-full max-w-5xl" 
+                 style={{ height: '80%', minHeight: '500px' }}>
               
               {/* Monitor Screen Bezel */}
-              <div className="bg-black rounded-2xl p-4 h-full relative overflow-hidden border-4 border-slate-800">
+              <div className="bg-black rounded-2xl p-3 h-full relative overflow-hidden border-4 border-slate-800">
                 
                 {/* Screen Content - Desktop Environment */}
                 <div className="w-full h-full bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 rounded-lg overflow-hidden relative">
@@ -112,26 +112,27 @@ export default function Preview() {
                   </div>
                   
                   {/* Main Application Window */}
-                  <div className="absolute top-8 left-1/2 transform -translate-x-1/2 w-4/5 h-4/5 bg-white rounded-lg shadow-2xl flex flex-col overflow-hidden">
+                  <div className="absolute top-6 left-1/2 transform -translate-x-1/2 w-5/6 bg-white rounded-lg shadow-2xl flex flex-col overflow-hidden" 
+                       style={{ height: 'calc(100% - 80px)' }}>
                     
                     {/* Window Title Bar */}
-                    <div className="h-8 bg-gradient-to-r from-slate-100 to-slate-200 border-b border-slate-300 flex items-center justify-between px-3 flex-shrink-0">
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-1">
-                          <div className="w-2.5 h-2.5 bg-red-500 rounded-full hover:bg-red-600 cursor-pointer"></div>
-                          <div className="w-2.5 h-2.5 bg-yellow-500 rounded-full hover:bg-yellow-600 cursor-pointer"></div>
-                          <div className="w-2.5 h-2.5 bg-green-500 rounded-full hover:bg-green-600 cursor-pointer"></div>
+                    <div className="h-10 bg-gradient-to-r from-slate-100 to-slate-200 border-b border-slate-300 flex items-center justify-between px-4 flex-shrink-0">
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-3 h-3 bg-red-500 rounded-full hover:bg-red-600 cursor-pointer"></div>
+                          <div className="w-3 h-3 bg-yellow-500 rounded-full hover:bg-yellow-600 cursor-pointer"></div>
+                          <div className="w-3 h-3 bg-green-500 rounded-full hover:bg-green-600 cursor-pointer"></div>
                         </div>
-                        <span className="text-xs text-slate-700 font-medium">React Native App</span>
+                        <span className="text-sm text-slate-700 font-medium">React Native App</span>
                       </div>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-2">
                         <div className="text-xs text-slate-500">Live Preview</div>
-                        <div className="w-1.5 h-1.5 bg-lime-400 rounded-full animate-pulse"></div>
+                        <div className="w-2 h-2 bg-lime-400 rounded-full animate-pulse"></div>
                       </div>
                     </div>
                     
                     {/* App Content */}
-                    <div className="flex-1 bg-slate-50 overflow-hidden">
+                    <div className="flex-1 bg-white overflow-hidden">
                       <iframe
                         ref={webIframeRef}
                         className="w-full h-full border-0"
@@ -142,32 +143,35 @@ export default function Preview() {
                   </div>
                   
                   {/* Desktop Taskbar */}
-                  <div className="absolute bottom-0 left-0 right-0 h-10 bg-slate-900/80 backdrop-blur-xl border-t border-slate-700/50 flex items-center justify-between px-4">
+                  <div className="absolute bottom-0 left-0 right-0 h-12 bg-slate-900/90 backdrop-blur-xl border-t border-slate-700/50 flex items-center justify-between px-6">
                     
                     {/* Start Button */}
-                    <div className="flex items-center gap-3">
-                      <div className="bg-lime-400 hover:bg-lime-500 transition-colors duration-200 rounded-md px-3 py-1 flex items-center gap-1 cursor-pointer">
-                        <div className="w-4 h-4 bg-slate-900 rounded-sm flex items-center justify-center">
-                          <div className="w-2 h-2 bg-lime-400 rounded-sm"></div>
+                    <div className="flex items-center gap-4">
+                      <div className="bg-lime-400 hover:bg-lime-500 transition-colors duration-200 rounded-lg px-4 py-2 flex items-center gap-2 cursor-pointer">
+                        <div className="w-5 h-5 bg-slate-900 rounded-sm flex items-center justify-center">
+                          <div className="w-3 h-3 bg-lime-400 rounded-sm"></div>
                         </div>
-                        <span className="text-slate-900 font-semibold text-xs">Start</span>
+                        <span className="text-slate-900 font-semibold text-sm">Start</span>
                       </div>
                       
                       {/* Running Apps */}
-                      <div className="bg-slate-800/60 hover:bg-slate-700/60 transition-colors duration-200 rounded-md px-2 py-1 cursor-pointer">
-                        <span className="text-white text-xs">React Native App</span>
+                      <div className="bg-slate-800/60 hover:bg-slate-700/60 transition-colors duration-200 rounded-lg px-3 py-2 cursor-pointer">
+                        <span className="text-white text-sm">React Native App</span>
                       </div>
                     </div>
                     
                     {/* System Tray */}
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-1 text-white text-xs">
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 text-white text-sm">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M12.01 21.49L23.64 7c-.45-.34-4.93-4-11.64-4C5.28 3 .81 6.66.36 7l11.63 14.49.01.01.01-.01z"/>
+                        </svg>
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M2 17h20v2H2zm1.15-4.05L4 11l.85 1.95L6.8 13l-1.95.85L4 15.8l-.85-1.95L1.2 13l1.95-.05zm6.7-6.7L9 5l.85 1.95L11.8 7l-1.95.85L9 9.8 8.15 7.85 6.2 7l1.95-.85L9 5l.85 1.25zm8.15 2.25l.85 1.95L20.8 10l-1.95.85L18 12.8l-.85-1.95L15.2 10l1.95-.85L18 7.2z"/>
                         </svg>
                         <span>100%</span>
                       </div>
-                      <div className="text-white text-xs font-medium">
+                      <div className="text-white text-sm font-medium">
                         {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                       </div>
                     </div>
@@ -203,11 +207,11 @@ export default function Preview() {
           </div>
         ) : (
           // Mobile Device Frame - Realistic iPhone
-          <div className="relative">
+          <div className="relative max-h-full overflow-y-auto py-4">
             {/* iPhone Device Frame */}
             <div className="bg-gradient-to-b from-white via-slate-800 to-slate-800 rounded-[3rem] p-2 shadow-2xl shadow-black/50 border border-slate-600/30 relative">
               {/* Device Screen Container */}
-              <div className="bg-black rounded-[2.5rem] overflow-hidden relative flex flex-col" style={{ width: '375px', height: '812px' }}>
+              <div className="bg-black rounded-[2.5rem] overflow-hidden relative flex flex-col" style={{ width: '330px', height: '700px' }}>
                 
                 {/* Dynamic Island (iPhone 15 Pro style) */}
                 <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-32 h-8 bg-black rounded-full z-20 border border-slate-800"></div>
@@ -264,7 +268,7 @@ export default function Preview() {
               {/* Device Info Labels */}
               <div className="absolute -bottom-14 left-1/2 transform -translate-x-1/2 text-center">
                 <div className="text-sm text-lime-400 font-semibold">iPhone 15 Pro</div>
-                <div className="text-xs text-slate-500 mt-1">375 × 812 • iOS Preview</div>
+                <div className="text-xs text-slate-500 mt-1">350 × 700 • iOS Preview</div>
               </div>
             </div>
           </div>

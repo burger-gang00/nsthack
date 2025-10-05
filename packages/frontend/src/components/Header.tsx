@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Play, Share2, Download, Settings, Sun, Moon, Monitor, User, Save } from 'lucide-react';
+import { Play, Share2, Download, Settings, User, Save } from 'lucide-react';
 import { usePlaygroundStore } from '../store/playgroundStore';
-import { useThemeStore } from '../store/themeStore';
+
 import { useAuthStore } from '../store/authStore';
 import { API_URL } from '../config';
 import ShareModal from './ShareModal';
@@ -11,12 +11,12 @@ import ScreenRecorder from './ScreenRecorder';
 
 export default function Header() {
   const { isConnected, files, openTabs } = usePlaygroundStore();
-  const { mode, setMode } = useThemeStore();
+
   const { isAuthenticated, user, token } = useAuthStore();
   const [showShare, setShowShare] = useState(false);
   const [showDownload, setShowDownload] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [showThemeMenu, setShowThemeMenu] = useState(false);
+
   const [isSyncing, setIsSyncing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const currentShareId = localStorage.getItem('currentShareId');
@@ -77,13 +77,7 @@ export default function Header() {
     }
   };
 
-  const getThemeIcon = () => {
-    switch (mode) {
-      case 'light': return <Sun className="w-5 h-5" />;
-      case 'dark': return <Moon className="w-5 h-5" />;
-      case 'auto': return <Monitor className="w-5 h-5" />;
-    }
-  };
+
 
   return (
     <>
@@ -161,52 +155,7 @@ export default function Header() {
             <Download className="w-5 h-5" />
           </button>
 
-          <div className="relative">
-            <button
-              onClick={() => setShowThemeMenu(!showThemeMenu)}
-              className="p-3 glass hover:bg-white/10 text-gray-300 hover:text-white rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg"
-              title="Change Theme"
-            >
-              {getThemeIcon()}
-            </button>
 
-            {showThemeMenu && (
-              <div className="absolute right-0 top-full mt-3 glass rounded-xl shadow-2xl z-50 min-w-[160px] animate-scale-in">
-                <div className="p-2">
-                  <button
-                    onClick={() => {
-                      setMode('light');
-                      setShowThemeMenu(false);
-                    }}
-                    className="w-full px-4 py-3 text-left hover:bg-white/10 rounded-lg flex items-center gap-3 text-gray-300 hover:text-white transition-all duration-200"
-                  >
-                    <Sun className="w-4 h-4" />
-                    <span className="font-medium">Light</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setMode('dark');
-                      setShowThemeMenu(false);
-                    }}
-                    className="w-full px-4 py-3 text-left hover:bg-white/10 rounded-lg flex items-center gap-3 text-gray-300 hover:text-white transition-all duration-200"
-                  >
-                    <Moon className="w-4 h-4" />
-                    <span className="font-medium">Dark</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setMode('auto');
-                      setShowThemeMenu(false);
-                    }}
-                    className="w-full px-4 py-3 text-left hover:bg-white/10 rounded-lg flex items-center gap-3 text-gray-300 hover:text-white transition-all duration-200"
-                  >
-                    <Monitor className="w-4 h-4" />
-                    <span className="font-medium">Auto</span>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
 
           <button
             onClick={() => setShowSettings(true)}

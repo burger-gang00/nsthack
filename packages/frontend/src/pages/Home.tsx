@@ -113,14 +113,14 @@ function Home() {
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center animate-fade-in-up" style={{animationDelay: '0.3s'}}>
             <a href="/playground">
-              <Button size="lg" className="bg-gradient-to-r from-green-600 via-lime-600 to-green-500 hover:from-green-500 hover:via-lime-500 hover:to-green-400 text-black px-10 py-5 text-xl font-bold rounded-2xl shadow-glow-green interactive">
+              <Button size="lg" className="bg-gradient-to-r from-green-600 via-lime-600 to-green-500 hover:from-green-500 hover:via-lime-500 hover:to-green-400 text-black px-10 py-5 text-xl font-bold rounded-2xl shadow-glow-green interactive flex items-center gap-3">
                 Start Coding Now
-                <ArrowRight className="w-6 h-6 ml-3" />
+               
               </Button>
             </a>
             <a href="https://github.com/your-repo" target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" size="lg" className="glass border-white/20 text-white hover:bg-white/10 px-10 py-5 text-xl font-bold rounded-2xl interactive">
-                <Github className="w-6 h-6 mr-3" />
+              <Button variant="outline" size="lg" className="glass border-white/20 text-white hover:bg-white/10 px-10 py-5 text-xl font-bold rounded-2xl interactive flex items-center gap-3">
+             
                 View on GitHub
               </Button>
             </a>
@@ -331,9 +331,9 @@ function Home() {
             Join thousands of developers who build amazing projects together with real-time collaboration.
           </p>
           <a href="/playground">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg">
+            <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg flex items-center gap-2">
               Get Started for Free
-              <ArrowRight className="w-5 h-5 ml-2" />
+              <ArrowRight className="w-5 h-5" />
             </Button>
           </a>
         </div>
