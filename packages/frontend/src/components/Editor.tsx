@@ -28,7 +28,7 @@ export default function Editor() {
       
       {/* Tabs */}
       <div className="flex bg-slate-800/80 backdrop-blur-sm border-b border-slate-700/30 overflow-x-auto relative z-10">
-        {openTabs.map((tab, index) => (
+        {openTabs.map((tab) => (
           <div
             key={tab.id}
             className={`flex items-center gap-3 px-4 py-3 border-r border-slate-700/30 cursor-pointer group min-w-[140px] relative transition-all duration-200 ${

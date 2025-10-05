@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Phone, PhoneOff } from 'lucide-react';
 import { usePlaygroundStore } from '../store/playgroundStore';
 
@@ -18,8 +18,8 @@ export default function IncomingCall({
   onReject
 }: IncomingCallProps) {
   const { socket } = usePlaygroundStore();
-  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
-  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
+  const [_localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const [_remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [isAccepted, setIsAccepted] = useState(false);
   
   const localVideoRef = useRef<HTMLVideoElement>(null);
