@@ -8,9 +8,9 @@ import { animationTemplate } from '../templates/animation';
 
 export default function Sidebar() {
   const [activeTab, setActiveTab] = useState<'files' | 'packages' | 'templates' | 'examples'>('files');
-  const { createFile, updateFileContent, openFile, files } = usePlaygroundStore();
+  const { updateFileContent, openFile, files } = usePlaygroundStore();
 
-  const loadTemplate = (name: string, content: string) => {
+  const loadTemplate = (_name: string, content: string) => {
     // Find or create App.tsx
     const findAppFile = (nodes: any[]): any => {
       for (const node of nodes) {
@@ -99,10 +99,46 @@ export default function Sidebar() {
                 </div>
                 <p className="text-xs text-gray-500">State management solution</p>
               </div>
+              <div className="bg-gray-900 p-3 rounded">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm font-medium text-white">axios</span>
+                  <span className="text-xs text-gray-400">^1.12.2</span>
+                </div>
+                <p className="text-xs text-gray-500">HTTP client for the browser</p>
+              </div>
+              <div className="bg-gray-900 p-3 rounded">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm font-medium text-white">expo</span>
+                  <span className="text-xs text-gray-400">~49.0.0</span>
+                </div>
+                <p className="text-xs text-gray-500">Platform for universal React apps</p>
+              </div>
+              <div className="bg-gray-900 p-3 rounded">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm font-medium text-white">@babel/standalone</span>
+                  <span className="text-xs text-gray-400">^7.24.4</span>
+                </div>
+                <p className="text-xs text-gray-500">Babel compiler for JavaScript</p>
+              </div>
+              <div className="bg-gray-900 p-3 rounded">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm font-medium text-white">socket.io-client</span>
+                  <span className="text-xs text-gray-400">^4.7.5</span>
+                </div>
+                <p className="text-xs text-gray-500">Real-time communication</p>
+              </div>
+              <div className="bg-gray-900 p-3 rounded">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm font-medium text-white">nanoid</span>
+                  <span className="text-xs text-gray-400">^5.0.7</span>
+                </div>
+                <p className="text-xs text-gray-500">Unique ID generator</p>
+              </div>
             </div>
-            <button className="w-full mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors">
-              + Add Package
-            </button>
+            <div className="mt-4 p-3 bg-gray-900 rounded text-xs text-gray-400">
+              💡 Install more packages using terminal:<br/>
+              <code className="text-green-400">npm install &lt;package-name&gt;</code>
+            </div>
           </div>
         )}
 

@@ -14,7 +14,7 @@ interface VersionHistoryProps {
   onRestore: (content: string) => void;
 }
 
-export default function VersionHistory({ fileId, onRestore }: VersionHistoryProps) {
+export default function VersionHistory({ onRestore }: VersionHistoryProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [versions] = useState<Version[]>([
     {

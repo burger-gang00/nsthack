@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { Socket } from 'socket.io-client';
+import { useAuthStore } from './authStore';
 
 interface User {
   id: string;
@@ -41,15 +42,18 @@ export const useCollaborationStore = create<CollaborationState>((set, get) => ({
   chatMessages: [],
   isCollaborating: false,
 
-  joinRoom: (roomId, socket, autoJoin = false) => {
+  joinRoom: (roomId, socket) => {
     // Always prompt for name
     const userName = prompt('Enter your name:') || 'Anonymous';
     const color = colors[Math.floor(Math.random() * colors.length)];
     
+    // Get userId from auth store if available
+    const userId = useAuthStore.getState().user?.id || null;
+    
     // Store roomId on socket for easy access
     (socket as any).roomId = roomId;
     
-    socket.emit('collaboration:join', { roomId, userName, color });
+    socket.emit('collaboration:join', { roomId, userName, color, userId });
     set({ roomId, isCollaborating: true });
   },
 

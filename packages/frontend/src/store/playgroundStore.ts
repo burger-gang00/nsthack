@@ -28,6 +28,7 @@ interface PlaygroundState {
   createFile: (name: string, parentId?: string) => void;
   createFolder: (name: string, parentId?: string) => void;
   deleteFile: (id: string) => void;
+  collectAllFiles: (nodes: FileNode[]) => any[];
   renameFile: (id: string, newName: string) => void;
   updateFileContent: (id: string, content: string, skipBroadcast?: boolean) => void;
   openFile: (fileId: string) => void;
@@ -147,12 +148,24 @@ const initialFiles: FileNode[] = [
             start: 'expo start',
             android: 'expo start --android',
             ios: 'expo start --ios',
-            web: 'expo start --web'
+            web: 'expo start --web',
+            dev: 'expo start',
+            build: 'expo build'
           },
           dependencies: {
-            'react': '^18.2.0',
-            'react-native': '^0.72.0',
-            'expo': '~49.0.0'
+            'react': '^18.3.1',
+            'react-native': '^0.74.0',
+            'expo': '~49.0.0',
+            'zustand': '^4.5.2',
+            'axios': '^1.12.2',
+            '@babel/standalone': '^7.24.4',
+            'socket.io-client': '^4.7.5',
+            'nanoid': '^5.0.7'
+          },
+          devDependencies: {
+            '@types/react': '^18.2.0',
+            '@types/react-native': '^0.72.0',
+            'typescript': '^5.4.5'
           }
         }, null, 2),
         language: 'json',
@@ -433,11 +446,36 @@ export const usePlaygroundStore = create<PlaygroundState>((set, get) => ({
     // Broadcast to collaborators (skip if this update came from a collaborator)
     if (!skipBroadcast && state.socket?.connected) {
       const roomId = (state.socket as any).roomId;
+      const shareId = localStorage.getItem('currentShareId');
+      
       if (roomId) {
         console.log('Broadcasting code change to room:', roomId, 'file:', id);
         state.socket.emit('collaboration:code-change', { roomId, fileId: id, content });
+      } else if (shareId) {
+        // Auto-sync shared project with debounce
+        console.log('Auto-syncing shared project:', shareId);
+        
+        // Clear previous timeout
+        if ((window as any).__syncTimeout) {
+          clearTimeout((window as any).__syncTimeout);
+        }
+        
+        // Debounce sync by 1 second
+        (window as any).__syncTimeout = setTimeout(() => {
+          const allFiles = get().collectAllFiles(state.files);
+          fetch('http://localhost:4000/api/share', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              shareId,
+              projectData: { files: allFiles, openTabs: state.openTabs },
+            }),
+          })
+            .then(() => console.log('✓ Auto-synced'))
+            .catch(err => console.error('Auto-sync failed:', err));
+        }, 1000);
       } else {
-        console.log('No roomId found, not broadcasting');
+        console.log('No roomId or shareId found, not broadcasting');
       }
     }
   },

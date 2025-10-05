@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Plus, Copy } from 'lucide-react';
+import { Plus, Copy } from 'lucide-react';
 import { usePlaygroundStore } from '../store/playgroundStore';
 
 const snippets = [

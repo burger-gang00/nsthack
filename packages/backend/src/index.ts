@@ -2,9 +2,12 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import { BundlerService } from './services/bundler.js';
 import { AIAgent } from './services/aiAgent.js';
+import { database } from './services/database.js';
+import { authService } from './services/auth.js';
 
 dotenv.config();
 
@@ -13,30 +16,189 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
     origin: 'http://localhost:3000',
-    methods: ['GET', 'POST']
+    methods: ['GET', 'POST'],
+    credentials: true
   }
 });
 
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use(express.json());
+app.use(cookieParser());
 
 const bundler = new BundlerService();
 const aiAgents = new Map<string, AIAgent>(); // One agent per socket connection
-const sharedProjects = new Map<string, any>(); // Store shared projects in memory
+const sharedProjects = new Map<string, any>(); // Fallback in-memory storage
+
+// Connect to MongoDB
+database.connect();
+
+// Auth middleware
+const authMiddleware = (req: any, res: any, next: any) => {
+  const token = req.headers.authorization?.replace('Bearer ', '');
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const decoded = authService.verifyToken(token);
+  if (!decoded) {
+    return res.status(401).json({ error: 'Invalid token' });
+  }
+
+  req.userId = decoded.userId;
+  next();
+};
+
+// Auth routes
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { email, password, name } = req.body;
+    const result = await authService.register(email, password, name);
+    res.json({ success: true, ...result });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const result = await authService.login(email, password);
+    res.json({ success: true, ...result });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/auth/me', authMiddleware, async (req: any, res) => {
+  try {
+    const user = await authService.getUserById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json({ success: true, user });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+// Playground routes
+app.post('/api/playgrounds', authMiddleware, async (req: any, res) => {
+  try {
+    const { name, files } = req.body;
+    const playgroundId = await authService.savePlayground(req.userId, name, files);
+    res.json({ success: true, playgroundId });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/playgrounds', authMiddleware, async (req: any, res) => {
+  try {
+    const playgrounds = await authService.getUserPlaygrounds(req.userId);
+    res.json({ success: true, playgrounds });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/playgrounds/:id', authMiddleware, async (req: any, res) => {
+  try {
+    const playground = await authService.getPlayground(req.params.id, req.userId);
+    if (!playground) {
+      return res.status(404).json({ error: 'Playground not found' });
+    }
+    res.json({ success: true, playground });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+app.put('/api/playgrounds/:id', authMiddleware, async (req: any, res) => {
+  try {
+    const { name, files } = req.body;
+    await authService.updatePlayground(req.params.id, req.userId, name, files);
+    res.json({ success: true });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+app.delete('/api/playgrounds/:id', authMiddleware, async (req: any, res) => {
+  try {
+    await authService.deletePlayground(req.params.id, req.userId);
+    res.json({ success: true });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+// Collaboration room routes
+app.post('/api/rooms', authMiddleware, async (req: any, res) => {
+  try {
+    const { roomId, name, files } = req.body;
+    const roomDbId = await authService.saveCollaborationRoom(roomId, name, req.userId, files);
+    res.json({ success: true, roomId: roomDbId });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/rooms', authMiddleware, async (req: any, res) => {
+  try {
+    const rooms = await authService.getUserRooms(req.userId);
+    res.json({ success: true, rooms });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/rooms/:roomId', async (req, res) => {
+  try {
+    const room = await authService.getRoom(req.params.roomId);
+    if (!room) {
+      return res.status(404).json({ error: 'Room not found' });
+    }
+    res.json({ success: true, room });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
 
 // REST API for sharing
-app.post('/api/share', (req, res) => {
+app.post('/api/share', async (req, res) => {
   const { shareId, projectData } = req.body;
+  
+  // Try MongoDB first
+  if (database.isConnected()) {
+    const saved = await database.saveProject(shareId, projectData);
+    if (saved) {
+      res.json({ success: true, shareId, storage: 'mongodb' });
+      return;
+    }
+  }
+  
+  // Fallback to in-memory
   sharedProjects.set(shareId, {
     ...projectData,
     createdAt: Date.now(),
     views: 0,
   });
-  res.json({ success: true, shareId });
+  res.json({ success: true, shareId, storage: 'memory' });
 });
 
-app.get('/api/share/:shareId', (req, res) => {
+app.get('/api/share/:shareId', async (req, res) => {
   const { shareId } = req.params;
+  
+  // Try MongoDB first
+  if (database.isConnected()) {
+    const project = await database.getProject(shareId);
+    if (project) {
+      res.json({ success: true, project });
+      return;
+    }
+  }
+  
+  // Fallback to in-memory
   const project = sharedProjects.get(shareId);
   if (project) {
     project.views++;
@@ -196,14 +358,29 @@ io.on('connection', (socket) => {
   });
 
   // Collaboration endpoints
-  socket.on('collaboration:join', ({ roomId, userName, color }) => {
+  socket.on('collaboration:join', async ({ roomId, userName, color, userId }) => {
     console.log(`User ${userName} joining room ${roomId}`);
 
     // Set socket data FIRST before joining room
-    socket.data = { userName, color, roomId };
+    socket.data = { userName, color, roomId, userId };
 
     // Join the room
     socket.join(roomId);
+
+    // Save to database if user is authenticated
+    if (userId && database.isConnected()) {
+      try {
+        // Check if room exists, if not create it
+        const existingRoom = await authService.getRoom(roomId);
+        if (!existingRoom) {
+          await authService.saveCollaborationRoom(roomId, `Room ${roomId.substring(0, 8)}`, userId, []);
+        } else {
+          await authService.joinCollaborationRoom(roomId, userId, userName);
+        }
+      } catch (error) {
+        console.error('Failed to save room join:', error);
+      }
+    }
 
     const user = {
       id: socket.id,
@@ -247,9 +424,18 @@ io.on('connection', (socket) => {
     io.in(roomId).emit('collaboration:chat-message', chatMessage);
   });
 
-  socket.on('collaboration:code-change', ({ roomId, fileId, content }) => {
+  socket.on('collaboration:code-change', async ({ roomId, fileId, content }) => {
     console.log(`Code change in room ${roomId}, file ${fileId}, broadcasting to others`);
     socket.to(roomId).emit('collaboration:code-updated', { fileId, content });
+
+    // Update activity
+    if (socket.data?.userId && database.isConnected()) {
+      try {
+        await authService.updateRoomActivity(roomId, socket.data.userId);
+      } catch (error) {
+        console.error('Failed to update room activity:', error);
+      }
+    }
 
     // Update shared project if this is a share room
     if (sharedProjects.has(roomId)) {

@@ -15,14 +15,29 @@ export default function Preview() {
         iframeDoc.open();
         iframeDoc.write(`
           <!DOCTYPE html>
-          <html>
+          <html style="height: 100%; margin: 0; padding: 0;">
             <head>
               <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
               <style>
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body { overflow: hidden; }
-                #root { width: 100vw; height: 100vh; }
+                * { 
+                  margin: 0; 
+                  padding: 0; 
+                  box-sizing: border-box; 
+                }
+                html, body { 
+                  width: 100%;
+                  height: 100%;
+                  overflow: hidden;
+                  margin: 0;
+                  padding: 0;
+                }
+                #root { 
+                  width: 100%;
+                  height: 100%;
+                  display: flex;
+                  overflow: hidden;
+                }
               </style>
             </head>
             <body>

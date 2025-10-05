@@ -39,10 +39,39 @@ export default function ShareModal({ isOpen, onClose, projectData }: ShareModalP
       const data = await response.json();
       if (data.success) {
         setShareComplete(true);
+        // Store share ID in localStorage for auto-sync
+        localStorage.setItem('currentShareId', shareId);
       }
     } catch (error) {
       console.error('Failed to share:', error);
       alert('Failed to share project. Make sure the server is running.');
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
+  const syncProject = async () => {
+    setIsSharing(true);
+    try {
+      const response = await fetch('http://localhost:4000/api/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          shareId,
+          projectData: {
+            ...projectData,
+            visibility,
+            password: visibility === 'private' ? password : null,
+          },
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert('✓ Project synced successfully!');
+      }
+    } catch (error) {
+      console.error('Failed to sync:', error);
+      alert('Failed to sync project.');
     } finally {
       setIsSharing(false);
     }
@@ -249,17 +278,30 @@ export default function ShareModal({ isOpen, onClose, projectData }: ShareModalP
           )}
           {!shareComplete && (
             <div className="text-sm text-gray-400">
-              Click "Copy" to save and share
+              Click "Save & Share" to create share link
             </div>
           )}
           <div className="flex gap-2">
-            {!shareComplete && (
+            {!shareComplete ? (
               <button
                 onClick={saveProject}
                 disabled={isSharing}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors disabled:opacity-50"
               >
                 {isSharing ? 'Saving...' : 'Save & Share'}
+              </button>
+            ) : (
+              <button
+                onClick={syncProject}
+                disabled={isSharing}
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                {isSharing ? 'Syncing...' : (
+                  <>
+                    <Check className="w-4 h-4" />
+                    Sync Changes
+                  </>
+                )}
               </button>
             )}
             <button

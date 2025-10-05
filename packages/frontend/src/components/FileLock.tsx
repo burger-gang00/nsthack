@@ -12,7 +12,7 @@ export default function FileLock() {
   useEffect(() => {
     if (!socket || !roomId) return;
 
-    socket.on('file:locked', ({ fileId, userId, userName }: any) => {
+    socket.on('file:locked', ({ fileId, userName }: any) => {
       if (fileId === activeFileId) {
         setLockedBy(userName);
         setIsLocked(true);

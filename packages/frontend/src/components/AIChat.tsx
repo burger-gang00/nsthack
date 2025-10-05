@@ -227,22 +227,6 @@ export default function AIChat() {
     }
   };
 
-  const generateCode = (type: 'component' | 'screen' | 'hook' | 'utility') => {
-    const descriptions = {
-      component: 'Generate a reusable button component',
-      screen: 'Generate a home screen',
-      hook: 'Generate a custom hook',
-      utility: 'Generate a utility function',
-    };
-
-    const description = prompt(`Describe the ${type} you want to generate:`, descriptions[type]);
-    if (!description || !socket) return;
-
-    addMessage('user', `Generate ${type}: ${description}`);
-    setIsLoading(true);
-    socket.emit('ai:generate', { description, type });
-  };
-
   if (isMinimized) {
     return (
       <button

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Github, X } from 'lucide-react';
 
-interface GitHubExportProps {
-  projectData: any;
-}
+// interface GitHubExportProps {
+//   projectData: any;
+// }
 
-export default function GitHubExport({ projectData }: GitHubExportProps) {
+export default function GitHubExport() {
   const [isOpen, setIsOpen] = useState(false);
   const [repoName, setRepoName] = useState('my-react-native-app');
   const [description, setDescription] = useState('Created with React Native Playground');
