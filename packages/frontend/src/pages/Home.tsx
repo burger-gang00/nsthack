@@ -1,4 +1,4 @@
-import { Users, Code, Video, Zap, Star, Github, ArrowRight } from 'lucide-react';
+import { Users, Code, Video, Zap, Star, ArrowRight } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 
 const features = [

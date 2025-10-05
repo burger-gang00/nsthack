@@ -101,32 +101,32 @@ function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
         <div className="text-white text-xl">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+    <div className="min-h-screen bg-slate-900">
       {/* Header */}
-      <header className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-800">
+      <header className="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded flex items-center justify-center">
-                <span className="text-white text-sm font-bold">RN</span>
+              <div className="w-8 h-8 bg-gradient-to-br from-lime-500 to-green-600 rounded flex items-center justify-center">
+                <span className="text-white text-sm font-bold">DC</span>
               </div>
-              <span className="text-white text-xl font-semibold">RN Live</span>
+              <span className="text-white text-xl font-semibold">DCODE Playground</span>
             </div>
             <div className="flex items-center gap-4">
               <a href="/playground">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button className="bg-lime-600 hover:bg-lime-700 text-white">
                   <Plus className="w-4 h-4 mr-2" />
                   New Playground
                 </Button>
               </a>
-              <Button variant="ghost" onClick={handleLogout} className="text-white">
+              <Button variant="ghost" onClick={handleLogout} className="text-white hover:bg-slate-700">
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
               </Button>
@@ -138,28 +138,28 @@ function Profile() {
       {/* Profile Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* User Info */}
-        <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg p-8 border border-gray-700 mb-8">
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-8 border border-slate-600 mb-8">
           <div className="flex items-center gap-4">
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+            <div className="w-20 h-20 bg-gradient-to-br from-lime-500 to-green-600 rounded-full flex items-center justify-center">
               <span className="text-white text-3xl font-bold">
                 {user?.name.charAt(0).toUpperCase()}
               </span>
             </div>
             <div>
               <h1 className="text-3xl font-bold text-white mb-1">{user?.name}</h1>
-              <p className="text-gray-400">{user?.email}</p>
+              <p className="text-slate-400">{user?.email}</p>
             </div>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-6 border-b border-gray-700">
+        <div className="flex gap-4 mb-6 border-b border-slate-700">
           <button
             onClick={() => setActiveTab('playgrounds')}
             className={`px-4 py-3 font-semibold transition-colors ${
               activeTab === 'playgrounds'
-                ? 'text-blue-400 border-b-2 border-blue-400'
-                : 'text-gray-400 hover:text-white'
+                ? 'text-lime-400 border-b-2 border-lime-400'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             My Playgrounds ({playgrounds.length})
@@ -168,8 +168,8 @@ function Profile() {
             onClick={() => setActiveTab('rooms')}
             className={`px-4 py-3 font-semibold transition-colors ${
               activeTab === 'rooms'
-                ? 'text-blue-400 border-b-2 border-blue-400'
-                : 'text-gray-400 hover:text-white'
+                ? 'text-lime-400 border-b-2 border-lime-400'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             Collaboration Rooms ({rooms.length})
